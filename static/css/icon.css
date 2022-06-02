@@ -1,0 +1,7 @@
+/*头像为圆形展示*/
+.icon {
+    border-radius: 50%; 
+    background-color: rgb(250, 250, 250);
+    overflow: hidden;
+    height: 50px;
+}
