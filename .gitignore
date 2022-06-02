@@ -1,0 +1,16 @@
+__pycache__
+**/__pycache__
+**/**/__pycache__
+**/**/**/__pycache__
+
+**.pyc
+**/**.pyc
+**/**/**.pyc
+**/**/**/**.pyc
+
+logs
+**/logs
+**/**/logs
+**/**/**/**/logs
+
+static\upload
