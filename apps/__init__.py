@@ -4,6 +4,8 @@ from apps.user.user_v1 import user_bp
 from exts import db
 from flask_wtf import CSRFProtect
 
+from modules.user_module import User
+
 
 # 创建全局csrf保护
 csrf = CSRFProtect()
