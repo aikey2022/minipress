@@ -3,6 +3,7 @@
 class Config():
     ENV = 'development'
     DEBUG = 'True'
+    SECRET_KEY = 'lksjhdjhaklioiqwuyeyQWAFDAFAYAGFH2232354fdaopweoierutngnbchgs'
     
     
 class Development(Config):
