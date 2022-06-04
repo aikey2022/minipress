@@ -24,7 +24,7 @@ def valid_code():
     # 保存验证码redis键值到session
     session['code_key'] = code_key
     # 保存验证码到redis缓存
-    cache.set(code_key,code,timeout=300)
+    cache.set(code_key,code,timeout=180)
     
     # 将验证码返回给前端
     # 创建一个缓冲区

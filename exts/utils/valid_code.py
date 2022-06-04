@@ -25,7 +25,7 @@ def image_code():
     for s in code:
         n += 1
         fill_color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
-        x = 10+n*20+random.randint(5,30)
+        x = 5+n*20+random.randint(5,30)
         y = 5+random.randint(0,20)
         draw.text((x, y), s, font=fnt, fill=fill_color)
         
