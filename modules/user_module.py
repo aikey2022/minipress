@@ -1,7 +1,7 @@
-from exts import db
+from exts import db,cache
 from datetime import datetime
 from modules.base_module import Base
-
+from flask import session
 from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,PasswordField,FileField,EmailField
 from wtforms.validators import DataRequired,Length,InputRequired,EqualTo,Regexp,ValidationError
@@ -33,7 +33,7 @@ class UserForm(FlaskForm):
     repassword = PasswordField('repassword', validators=[DataRequired(),InputRequired(message="必须输入确认密码"),EqualTo('password',message='两次密码不一致')])
     email = EmailField('email', validators=[DataRequired(),InputRequired(message="必须输入邮箱"),Length(min=7,max=50,message='邮箱长度在6-50个字符'),])
     phone = StringField('phone', validators=[DataRequired(),InputRequired(message="必须输入11位手机号"),Length(min=11,max=11,message='请输入11位手机号'),Regexp('^1[356789][0-9]{9}$',message='手机号格式不正确')])
-    
+    check_code = StringField('check_code', validators=[DataRequired(),InputRequired(message="必须输入验证码"),Length(min=4,max=4,message='验证码长度为4位')])
 
     def validate_username(self,field):
         if User.query.filter(User.username == field.data).first():
@@ -46,3 +46,13 @@ class UserForm(FlaskForm):
     def validate_phone(self,field):
         if User.query.filter(User.phone == field.data).first():
             raise ValidationError(message='手机号已存在')
+    
+    def validate_check_code(self,field):
+        code_key = session.get('code_key')
+        # 验证过期
+        if not cache.get(code_key):
+            raise ValidationError(message='验证码已过期')
+        
+        #  验证码错误
+        if cache.get(code_key).lower() != field.data.lower():
+            raise ValidationError(message='验证码错误')

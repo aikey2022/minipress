@@ -59,10 +59,12 @@
   		  <div class="form-group">
   			<label for="inputCheckCode" class="col-md-2 control-label">* 验证码: </label>
   			<div class="col-md-3">
-  			  <input type="password" class="form-control" id="inputCheckCode" placeholder="请输入验证码">
+				{{ form.check_code(class="form-control",placeholder='请输入验证码')  }} 
+				{# 验证未通过 #}
+				{% if form.check_code.errors %}<span style="color:red">{{ form.check_code.errors[0]}}</span>{% endif %}
   			</div>
 			<div class="col-md-2">
-			  <img  alt="" src=""  width="130px"  height="35px"/>
+			  <img  alt="" id="image_code" src="{{ url_for('user.imgcode') }}"  width="130px"  height="35px"/>
 			</div>
   		  </div>  
 							  
@@ -77,6 +79,17 @@
   	
   </div>
 
+{% endblock %}
 
+
+{% block scripts %} 
+<script>
+    // 点击切换验证码
+    $('#image_code').click(function(){
+        // 后面添加一个随机数，不同的请求才能切换
+        $(this).attr('src', "{{ url_for('user.imgcode') }}?key=" + Math.random());
+        // $(this).attr('src', "{{ url_for('user.imgcode') }}");
+    });
+</script>
 
 {% endblock %}
