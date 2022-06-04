@@ -1,8 +1,10 @@
 from exts import db
 from datetime import datetime
+from modules.base_module import Base
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
+class User(Base):
+    __tablename__ = 'user'
+
     username = db.Column(db.String(50), nullable=False,unique=True)
     password = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), nullable=False,unique=True)
@@ -10,10 +12,10 @@ class User(db.Model):
     is_delete = db.Column(db.Boolean, default=False)
     is_root = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
-    allow_login = db.Column(db.Boolean, default=False)
-    reg_time = db.Column(db.DateTime, default=datetime.now)
+    allow_login = db.Column(db.Boolean, default=True)
     active_time = db.Column(db.DateTime)
     login_time = db.Column(db.DateTime)
+    icon = db.Column(db.String(255))
     
     def __str__(self):
         return self.username
