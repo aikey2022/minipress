@@ -8,7 +8,7 @@ class Config():
     # 禁用/开启表单的 CSRF 保护。默认是开启
     WTF_CSRF_ENABLED = True
     # 默认下启用 CSRF 检查针对所有的视图。 默认值是 True。
-    WTF_CSRF_CHECK_DEFAULT = True
+    # WTF_CSRF_CHECK_DEFAULT = True
     # 一个随机字符串生成 CSRF 令牌。 默认同 SECRET_KEY 一样。
     WTF_CSRF_SECRET_KEY = 'pplldlkdljdjlwiAKQKFRLGFKGSDPFGK12133523565645445PDPFKAGMKHM<FKSKL'
     # CSRF 令牌过期时间。默认是 3600 秒

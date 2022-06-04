@@ -1,17 +1,13 @@
 from flask import Flask
 import settings
 from apps.user.user_v1 import user_bp
-from exts import db,cache
-from flask_wtf import CSRFProtect
-
+from exts import db,cache,csrf
 from modules.user_module import User
 from modules.article_module import Article_Type,Article,Comments
 from modules.photo_module import Photo
 from modules.msg_aboard_module import MsgAboard
 
 
-# 创建全局csrf保护
-csrf = CSRFProtect()
 
 # 创建app
 def create_app():
