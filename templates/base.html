@@ -37,12 +37,13 @@
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">文章分类 <span class="caret"></span></a>
 			  <ul class="dropdown-menu">
-				<li><a href="#">Nginx</a></li>
-				<li><a href="#">MySQL</a></li>
-				<li><a href="#">Docker</a></li>
-				<li><a href="#">K8s</a></li>
-				<li role="separator" class="divider"></li>
-				<li><a href="#">NFS</a></li>
+				{% if types %}
+				{% for type in types %}
+				{% if loop.last %}<li role="separator" class="divider"></li>{% endif %}
+				<li><a href="#">{{ type.type_name }}</a></li>
+				{% endfor %}
+				{% endif %}
+
 			  </ul>
 			</li>
 		  </ul>
@@ -57,15 +58,12 @@
 			{# 登录成功 #}
 			{% if user %}
 			{# 显示头像 #}
-			<nav class="navbar navbar-default">
-			  <div class="container-fluid">
-			    <div class="navbar-header">
-			      <a class="navbar-brand" href="#">
-			        <img alt="" src="../static/images/icon/bingdundun.jpg" class="icon">
-			      </a>
-			    </div>
-			  </div>
-			</nav>
+			<li>
+				<a class="navbar-brand" href="#">
+					<img alt=""  class="icon" src="../static/images/icon/bingdundun.jpg">
+				</a>
+			</li>
+			
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">欢迎 {{ user.username }} <span class="caret"></span></a>
 			  <ul class="dropdown-menu">
@@ -81,7 +79,7 @@
 			{# 未登录 #}
 			{% else %}
 			<li><a href="{{ url_for('user.register') }}">注册</a></li>
-			<li><a href="#">登录</a></li>
+			<li><a href="{{ url_for('user.login') }}">登录</a></li>
 			{% endif %}
 		  </ul>
 		</div><!-- /.navbar-collapse -->

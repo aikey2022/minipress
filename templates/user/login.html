@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+  <div class="container">
+  	<div class="row">
+  		<form class="form-horizontal" action="{{ url_for('user.login') }}" method="post">
+			  {{ form.csrf_token }}
+			<div class="form-group">
+				<div class="col-md-offset-2  col-md-3" style="text-align: center;">
+				  <h2>用户登录</h2>
+				</div>
+			</div>
+			
+  		  <div class="form-group">
+  			<label for="username" class="col-md-2 control-label">* 用户名: </label>
+  			<div class="col-md-3">
+				  {{ form.username(class="form-control",placeholder='请输入用户名')  }} 
+				  {# 验证未通过 #}
+				  {% if form.username.errors %}<span style="color:red">{{ form.username.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  		  
+  		  <div class="form-group">
+  			<label for="password" class="col-md-2 control-label">* 密码: </label>
+  			<div class="col-md-3">
+				{{ form.password(class="form-control",placeholder='请输入密码')  }} 
+				{# 验证未通过 #}
+				{% if form.password.errors %}<span style="color:red">{{ form.password.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+		  
+  		  <div class="form-group">
+  			<label for="inputCheckCode" class="col-md-2 control-label">* 验证码: </label>
+  			<div class="col-md-3">
+				{{ form.check_code(class="form-control",placeholder='请输入验证码')  }} 
+				{# 验证未通过 #}
+				{% if form.check_code.errors %}<span style="color:red">{{ form.check_code.errors[0]}}</span>{% endif %}
+  			</div>
+			<div class="col-md-2">
+			  <img  alt="" id="image_code" src="{{ url_for('user.imgcode') }}"  width="130px"  height="35px"/>
+			</div>
+  		  </div>  
+							  
+  		  <div class="form-group">
+  			<div class="col-md-offset-2 col-md-4">
+  			  <button type="submit" class="btn btn-default">登录</button>
+              {% if error %}<span style="color:red">{{ error }}</span>{% endif %}
+  			</div>
+  		  </div>
+  		</form>
+  
+  	</div>
+  	
+  </div>
+
+{% endblock %}
+
+
+{% block scripts %} 
+<script>
+    // 点击切换验证码
+    $('#image_code').click(function(){
+        // 后面添加一个随机数，不同的请求才能切换
+        $(this).attr('src', "{{ url_for('user.imgcode') }}?key=" + Math.random());
+        // $(this).attr('src', "{{ url_for('user.imgcode') }}");
+    });
+</script>
+
+{% endblock %}

@@ -5,6 +5,9 @@ from flask import session
 from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,PasswordField,FileField,EmailField
 from wtforms.validators import DataRequired,Length,InputRequired,EqualTo,Regexp,ValidationError
+import re
+
+
 
 
 class User(Base):
@@ -26,8 +29,8 @@ class User(Base):
         return self.username
 
 
-# 验证表单
-class UserForm(FlaskForm):
+# 验证注册表单
+class UserRegForm(FlaskForm):
     username = StringField('username', validators=[DataRequired(),InputRequired(message="必须输入用户名"),Length(min=6,max=20,message='用户名长度在6-20个字符'),])
     password = PasswordField('password', validators=[DataRequired(),InputRequired(message="必须输入密码"),Length(min=6,max=16,message='密码长度在6-16个字符'),])
     repassword = PasswordField('repassword', validators=[DataRequired(),InputRequired(message="必须输入确认密码"),EqualTo('password',message='两次密码不一致')])
@@ -36,8 +39,14 @@ class UserForm(FlaskForm):
     check_code = StringField('check_code', validators=[DataRequired(),InputRequired(message="必须输入验证码"),Length(min=4,max=4,message='验证码长度为4位')])
 
     def validate_username(self,field):
+        if re.search('^[0-9_]',field.data):
+            raise ValidationError(message='用户名不能以数字或者下划线开头')
+        
         if User.query.filter(User.username == field.data).first():
             raise ValidationError(message='用户名已存在')
+        
+        if re.search(' ',field.data):
+            raise ValidationError(message='用户名不能含有空格')
         
     def validate_email(self,field):
         if User.query.filter(User.email == field.data).first():
@@ -47,6 +56,24 @@ class UserForm(FlaskForm):
         if User.query.filter(User.phone == field.data).first():
             raise ValidationError(message='手机号已存在')
     
+    def validate_check_code(self,field):
+        code_key = session.get('code_key')
+        # 验证过期
+        if not cache.get(code_key):
+            raise ValidationError(message='验证码已过期')
+        
+        #  验证码错误
+        if cache.get(code_key).lower() != field.data.lower():
+            raise ValidationError(message='验证码错误')
+        
+
+#  验证登录表单
+class UserLogForm(FlaskForm):
+    username = StringField('username', validators=[DataRequired(),InputRequired(message="必须输入用户名"),Length(min=6,max=20,message='用户名长度在6-20个字符'),])
+    password = PasswordField('password', validators=[DataRequired(),InputRequired(message="必须输入密码"),Length(min=6,max=16,message='密码长度在6-16个字符'),])
+    check_code = StringField('check_code', validators=[DataRequired(),InputRequired(message="必须输入验证码"),Length(min=4,max=4,message='验证码长度为4位')])
+    
+    # 检查验证码
     def validate_check_code(self,field):
         code_key = session.get('code_key')
         # 验证过期

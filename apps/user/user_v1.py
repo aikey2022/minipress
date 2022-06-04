@@ -1,18 +1,32 @@
-from flask import Blueprint,render_template,request,redirect,url_for,flash,session,g,jsonify,make_response
+from operator import and_
+from flask import Blueprint,render_template,request,redirect,url_for,flash,session,g,jsonify,make_response,abort
 from exts import db,cache,csrf
 from exts.utils.valid_code import image_code
-from modules.user_module import User,UserForm
+from modules.user_module import User,UserRegForm,UserLogForm
+from modules.article_module import Article_Type
 import time,io
 
 # 创建蓝图
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 
 
+@user_bp.before_app_request
+def before_user_bp_request():
+    # 每个请求都要展示文章分类
+    articl_type = Article_Type.query.all()
+    g.types = articl_type
 
-@user_bp.route('/')
+
+
+@user_bp.route('/',endpoint='index')
 def user_index():
-    return 'user_index'
-
+    g.user = session.get('user')
+    if g.user:
+        #  登陆状态
+        return render_template('user/index.html',types=g.types,user=g.user)
+    
+    # 非登陆状态
+    return render_template('user/index.html',types=g.types)
 
 @user_bp.route('/imgcode',endpoint='imgcode')
 def valid_code():
@@ -42,7 +56,7 @@ def valid_code():
 
 @user_bp.route('/register', endpoint="register",methods=['GET', 'POST'])
 def user_register():
-    uform = UserForm()
+    uform = UserRegForm()
     # 数据正确 并且验证csrf通过
     if uform.validate_on_submit():  
         # 获取数据
@@ -68,3 +82,29 @@ def user_register():
     # 默认展示注册页面
     return render_template('user/register.html',form=uform)
 
+
+@user_bp.route('/login', endpoint="login",methods=['GET', 'POST'])
+def user_login():
+    form = UserLogForm()
+    if form.validate_on_submit():
+        # 获取登陆信息
+        username = request.form.get('username')
+        password = request.form.get('password')
+        # check_code = request.form.get('check_code')
+        
+        # 验证登陆信息
+        user = User.query.filter(and_(User.username==username,User.password==password)).first()
+        if user:
+            # 验证通过
+            # 设置session
+            session['user'] = user.id
+            # 设置缓存
+            cache.set(str(user.id),user.username,timeout=3600)
+            g.user = user
+            flash("登陆成功^_^", category="info")
+            return redirect(url_for('user.index'))
+        
+        # 登录失败
+        return render_template('user/login.html',form=form,types=g.types,error="用户名或者密码错误") 
+    # 默认展示登陆页面    
+    return render_template('user/login.html',form=form)
