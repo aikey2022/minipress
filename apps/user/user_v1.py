@@ -20,13 +20,17 @@ def before_user_bp_request():
 
 @user_bp.route('/',endpoint='index')
 def user_index():
-    g.user = session.get('user')
-    if g.user:
-        #  登陆状态
-        return render_template('user/index.html',types=g.types,user=g.user)
+    # 根据缓存查询用户登陆状态
+    if cache.get(str(session.get('uid'))):
+        g.user = User.query.filter(User.id == session.get('uid')).first()
+        # 登陆状态
+        if g.user:
+            return render_template('user/index.html',types=g.types,user=g.user)
     
     # 非登陆状态
     return render_template('user/index.html',types=g.types)
+
+
 
 @user_bp.route('/imgcode',endpoint='imgcode')
 def valid_code():
@@ -97,8 +101,8 @@ def user_login():
         if user:
             # 验证通过
             # 设置session
-            session['user'] = user.id
-            # 设置缓存
+            session['uid'] = user.id
+            # 设置缓存  uid=username
             cache.set(str(user.id),user.username,timeout=3600)
             g.user = user
             flash("登陆成功^_^", category="info")
@@ -108,3 +112,13 @@ def user_login():
         return render_template('user/login.html',form=form,types=g.types,error="用户名或者密码错误") 
     # 默认展示登陆页面    
     return render_template('user/login.html',form=form)
+
+
+# 退出登录
+@user_bp.route('/logout', endpoint="logout",methods=['GET', 'POST'])
+def user_logout():
+    # 删除缓存登陆状态 删除key--> uid=username
+    cache.delete(str(session.get('uid')))
+    # 删除session
+    session.clear()
+    return redirect(url_for('user.login'))

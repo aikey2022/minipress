@@ -58,11 +58,9 @@
 			{# 登录成功 #}
 			{% if user %}
 			{# 显示头像 #}
-			<li>
-				<a class="navbar-brand" href="#">
-					<img alt=""  class="icon" src="../static/images/icon/bingdundun.jpg">
-				</a>
-			</li>
+			<div class="navbar-header">
+			  <a  href="#"><img alt=""  class="icon" src="../static/images/icon/bingdundun.jpg"></a>
+			</div>
 			
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">欢迎 {{ user.username }} <span class="caret"></span></a>
@@ -73,7 +71,7 @@
 				<li><a href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 管理留言</a></li>
 				<li><a href="#"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> 设置关于本站</a></li>
 				<li role="separator" class="divider"></li>
-				<li><a href="#"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> 退出</a></li>
+				<li><a href="{{ url_for('user.logout') }}"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> 退出</a></li>
 			  </ul>
 			</li>
 			{# 未登录 #}
