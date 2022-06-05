@@ -3,7 +3,7 @@ from flask import Blueprint,render_template,request,redirect,url_for,flash,sessi
 from werkzeug.security import generate_password_hash,check_password_hash
 from exts import db,cache,csrf
 from exts.utils.valid_code import image_code
-from modules.user_module import User,UserRegForm,UserLogForm
+from modules.user_module import User,UserRegForm,UserLogForm,UserCenterForm
 from modules.article_module import Article_Type
 import time,io
 
@@ -18,6 +18,10 @@ def before_user_bp_request():
     # 每个请求都要展示文章分类
     articl_type = Article_Type.query.all()
     g.types = articl_type
+    uid = session.get('uid')
+    if uid:
+       g.user = User.query.filter(User.id == uid).first() 
+       print('-------------------------->>',g.user)
 
 
 
@@ -133,3 +137,11 @@ def user_logout():
     # 删除session
     session.clear()
     return redirect(url_for('user.login'))
+
+
+# 个人中心
+@user_bp.route('/center', endpoint="center",methods=['GET', 'POST'])
+@check_login_status
+def user_center():
+    form = UserCenterForm()
+    return render_template('user/user_center.html',user=g.user,types=g.types,form=form)

@@ -9,7 +9,7 @@ from exts import db,cache,csrf
 def check_login_status(func):
     def outer(*args, **kwargs):
         uid = session.get('uid')
-        # 1 uid不存在-未登录
+        # 1 uid不存在->未登录
         if not uid:
             # print('----------------->>>',"未登录")
             return redirect(url_for('user.login'))
@@ -20,7 +20,7 @@ def check_login_status(func):
             return redirect(url_for('user.login'))
         
         # 3 已登录
-        user = User.query.filter(User.id == session.get('uid')).first
+        user = User.query.filter(User.id == session.get('uid')).first()
         g.user = user
         # print('----------------->>>',"已登录")
         return func(*args, **kwargs)

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %} <title>用户中心</title> {% endblock %}
+
+{% block content %} 
+  <div class="container">
+  	<div class="row">
+  		<form class="form-horizontal" action="{{ url_for('user.center') }}" method="post" enctype="multipart/form-data">
+			  {{ form.csrf_token }}
+			<div class="form-group">
+				<div class="col-md-offset-2  col-md-3" style="text-align: center;">
+				  <h2>个人中心</h2>
+				</div>
+			</div>
+			
+  		  <div class="form-group">
+  			<label for="username" class="col-md-2 control-label">用户名: </label>
+  			<div class="col-md-3">
+				  {{ form.username(class="form-control",value=user.username) }} 
+				  {# 验证未通过 #}
+				  {% if form.username.errors %}<span style="color:red">{{ form.username.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  		  
+  		  <div class="form-group">
+  			<label for="email" class="col-md-2 control-label">邮箱: </label>
+  			<div class="col-md-3">
+  			  {{ form.email(class="form-control",value=user.email) }} 
+				{# 验证未通过 #}
+			  {% if form.email.errors %}<span style="color:red">{{ form.email.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  
+  		  <div class="form-group">
+  			<label for="phone" class="col-md-2 control-label">手机: </label>
+  			<div class="col-md-3">
+				{{ form.phone(class="form-control",value=user.phone)}} 
+				{# 验证未通过 #}
+				{% if form.phone.errors %}<span style="color:red">{{ form.phone.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+
+  		  <div class="form-group">
+            <label for="phone" class="col-md-2 control-label">头像: </label>
+            <div class="col-md-3">
+              {{ form.iconload(class="form-control")  }} 
+              {# 验证未通过 #}
+              {% if form.iconload.errors %}<span style="color:red">{{ form.iconload.errors[0]}}</span>{% endif %}
+            </div>
+          </div>
+				  
+  		  <div class="form-group">
+  			<div class="col-md-offset-2 col-md-4">
+  			  <button type="submit" class="btn btn-default">更新资料</button>
+  			</div>
+  		  </div>
+  		</form>
+  
+  	</div>
+  	
+  </div>
+
+{% endblock %}
+
