@@ -1,4 +1,4 @@
-
+import os
 
 class Config():
     ENV = 'development'
@@ -17,10 +17,21 @@ class Config():
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@10.0.0.101:3306/minipress?charset=utf8'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     
+    # redis配置
     CACHE_TYPE = 'redis'
     CACHE_REDIS_HOST = '10.0.0.101'
     CACHE_REDIS_PORT = 6379
     CACHE_REDIS_PASSWORD = 'foobaa'
+    
+    # 静态文件夹配置
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    STATIC_DIR = os.path.join(BASE_DIR,'static')
+    UPLOAD_DIR = os.path.join(STATIC_DIR,'upload')
+    # 图标文件夹
+    ICON_DIR = os.path.join(UPLOAD_DIR,'icon')
+    # 相册文件夹
+    PHOTO_DIR = os.path.join(UPLOAD_DIR,'photo')
+    
     
     
 class Development(Config):

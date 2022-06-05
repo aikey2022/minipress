@@ -13,6 +13,6 @@ logs
 **/**/logs
 **/**/**/**/logs
 
-static\upload
+static/upload
 
 migrations

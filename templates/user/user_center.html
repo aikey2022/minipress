@@ -43,9 +43,9 @@
   		  <div class="form-group">
             <label for="phone" class="col-md-2 control-label">头像: </label>
             <div class="col-md-3">
-              {{ form.iconload(class="form-control")  }} 
+              {{ form.iconimg(class="form-control")  }} 
               {# 验证未通过 #}
-              {% if form.iconload.errors %}<span style="color:red">{{ form.iconload.errors[0]}}</span>{% endif %}
+              {% if form.iconimg.errors %}<span style="color:red">{{ form.iconimg.errors[0]}}</span>{% endif %}
             </div>
           </div>
 				  
@@ -55,7 +55,10 @@
   			</div>
   		  </div>
   		</form>
-  
+		  <div class="col-md-offset-2 col-md-4">
+			<image {% if user.icon %} src="{{ url_for('static',filename=user.icon) }}" {% else %} src="{{ url_for('static',filename='images/icon/libai.png') }}"{% endif %}width="210px" height="210px">
+		  </div>
+		</div>
   	</div>
   	
   </div>

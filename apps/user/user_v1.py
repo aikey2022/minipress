@@ -1,11 +1,12 @@
 from operator import and_
 from flask import Blueprint,render_template,request,redirect,url_for,flash,session,g,jsonify,make_response,abort
 from werkzeug.security import generate_password_hash,check_password_hash
+from werkzeug.utils import secure_filename
 from exts import db,cache,csrf
 from exts.utils.valid_code import image_code
 from modules.user_module import User,UserRegForm,UserLogForm,UserCenterForm
 from modules.article_module import Article_Type
-import time,io
+import os,time,io,settings
 
 from apps.user.check_login import check_login_status
 
@@ -21,7 +22,7 @@ def before_user_bp_request():
     uid = session.get('uid')
     if uid:
        g.user = User.query.filter(User.id == uid).first() 
-       print('-------------------------->>',g.user)
+       # print('-------------------------->>',g.user)
 
 
 
@@ -144,4 +145,38 @@ def user_logout():
 @check_login_status
 def user_center():
     form = UserCenterForm()
+    user = g.user
+    if form.validate_on_submit():
+        if form.iconimg.data:
+            # 有图片上传
+            filename = secure_filename(form.iconimg.data.filename)
+            suffix = filename.rsplit('.',1)[-1]
+
+            # 生成时间戳
+            now = time.time()
+            # 生成新的图片名称---确保图片唯一
+            new_image_name = f'{user.id}{user.username}{now}.{suffix}'
+            
+            # 删除旧头像
+            icon_path = os.path.join(settings.Development.ICON_DIR,user.icon)
+            if os.path.exists(icon_path):
+                try:
+                    os.remove(icon_path)
+                except Exception as e:
+                    print(e)
+            # 保存新头像到本地
+            form.iconimg.data.save(settings.Development.ICON_DIR +"/"+ new_image_name)
+            # 生成icon图片的url---相对路径
+            icon_url = os.path.join('upload/icon/', new_image_name.replace('\\','/'))
+            user.icon = icon_url
+        
+        # 没有头像上传    
+        user.username = request.form.get('username')
+        user.email = request.form.get('email')
+        user.phone = request.form.get('phone')
+    
+        # 提交数据库
+        db.session.commit()
+    
+    # 默认返回个人中心页面
     return render_template('user/user_center.html',user=g.user,types=g.types,form=form)

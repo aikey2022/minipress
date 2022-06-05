@@ -59,7 +59,7 @@
 			{% if user %}
 			{# 显示头像 #}
 			<div class="navbar-header">
-			  <a  href="#"><img alt=""  class="icon" src="../static/images/icon/bingdundun.jpg"></a>
+			  <a  href="#"><img alt=""  class="icon" {% if user.icon %} src="{{ url_for('static',filename=user.icon) }}" {% else %} src="../static/images/icon/bingdundun.jpg" {% endif %}></a>
 			</div>
 			
 			<li class="dropdown">
