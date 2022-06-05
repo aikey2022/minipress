@@ -1,5 +1,6 @@
 from operator import and_
 from flask import Blueprint,render_template,request,redirect,url_for,flash,session,g,jsonify,make_response,abort
+from werkzeug.security import generate_password_hash,check_password_hash
 from exts import db,cache,csrf
 from exts.utils.valid_code import image_code
 from modules.user_module import User,UserRegForm,UserLogForm
@@ -76,7 +77,7 @@ def user_register():
         # 创建user对象
         user = User()
         user.username= username
-        user.password= password
+        user.password= generate_password_hash(password=password)
         user.email= email
         user.phone= phone
         
@@ -97,11 +98,18 @@ def user_login():
         # 获取登陆信息
         username = request.form.get('username')
         password = request.form.get('password')
+        
         # check_code = request.form.get('check_code')
         
         # 验证登陆信息
-        user = User.query.filter(and_(User.username==username,User.password==password)).first()
+        user = User.query.filter(User.username==username).first()
+        # 校验密码
         if user:
+            check_pwd = check_password_hash(pwhash=user.password,password=password)
+        else:
+            check_pwd = False
+            
+        if user and  check_pwd:
             # 验证通过
             # 设置session
             session['uid'] = user.id
