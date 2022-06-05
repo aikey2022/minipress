@@ -6,6 +6,8 @@ from modules.user_module import User,UserRegForm,UserLogForm
 from modules.article_module import Article_Type
 import time,io
 
+from apps.user.check_login import check_login_status
+
 # 创建蓝图
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 
@@ -19,6 +21,7 @@ def before_user_bp_request():
 
 
 @user_bp.route('/',endpoint='index')
+@check_login_status
 def user_index():
     # 根据缓存查询用户登陆状态
     if cache.get(str(session.get('uid'))):
