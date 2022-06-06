@@ -9,10 +9,12 @@ from modules.article_module import Article_Type
 import os,time,io,settings
 
 from apps.user.check_login import check_login_status
+from exts.utils.logsout import CreateLogging
+
 
 # 创建蓝图
 user_bp = Blueprint('user', __name__, url_prefix='/user')
-
+bp_logging = CreateLogging('user_v1','debug')
 
 @user_bp.before_app_request
 def before_user_bp_request():
@@ -77,6 +79,7 @@ def user_register():
         password = request.form.get('password')
         email = request.form.get('email')
         phone = request.form.get('phone')
+        bp_logging.logger.debug(f'username:{username},password:{password},email:{email},phone:{phone}')
         # print('info----------------->>>',username,password,email,phone)
             
         # 创建user对象
@@ -122,6 +125,7 @@ def user_login():
             cache.set(str(user.id),user.username,timeout=3600)
             g.user = user
             flash("登陆成功^_^", category="info")
+            bp_logging.logger.debug('登陆成功')
             return redirect(url_for('user.index'))
         
         # 登录失败
@@ -181,6 +185,7 @@ def user_center():
     
         # 提交数据库
         db.session.commit()
-    
+        flash("修改成功^_^", category="info")
+        bp_logging.logger.debug('更新资料成功')
     # 默认返回个人中心页面
     return render_template('user/user_center.html',user=g.user,types=g.types,form=form)

@@ -87,7 +87,12 @@ class UserRegForm(UsernameForm,PassWordForm,EmailForm,PhoneForm,CheckCodeForm):
 
 #  验证登录表单
 class UserLogForm(UsernameForm,PassWordForm,CheckCodeForm):
-    pass
+    def validate_username(self,field):
+        if re.search('^[0-9_]',field.data):
+            raise ValidationError(message='用户名不能以数字或者下划线开头')
+        
+        if re.search(' ',field.data):
+            raise ValidationError(message='用户名不能含有空格')
 
 
 #  用户中心表单
