@@ -147,9 +147,9 @@ def user_center():
     form = UserCenterForm()
     user = g.user
     if form.validate_on_submit():
-        if form.iconimg.data:
+        if form.image.data:
             # 有图片上传
-            filename = secure_filename(form.iconimg.data.filename)
+            filename = secure_filename(form.image.data.filename)
             suffix = filename.rsplit('.',1)[-1]
 
             # 生成时间戳
@@ -158,7 +158,7 @@ def user_center():
             new_image_name = f'{user.id}{user.username}{now}.{suffix}'
             
             # 保存新头像到本地
-            form.iconimg.data.save(settings.Development.ICON_DIR +"/"+ new_image_name)
+            form.image.data.save(settings.Development.ICON_DIR +"/"+ new_image_name)
             
             # 删除旧头像
             if user.icon:
