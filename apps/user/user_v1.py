@@ -157,16 +157,20 @@ def user_center():
             # 生成新的图片名称---确保图片唯一
             new_image_name = f'{user.id}{user.username}{now}.{suffix}'
             
-            # 删除旧头像
-            icon_path = os.path.join(settings.Development.ICON_DIR,user.icon)
-            if os.path.exists(icon_path):
-                try:
-                    os.remove(icon_path)
-                except Exception as e:
-                    print(e)
             # 保存新头像到本地
             form.iconimg.data.save(settings.Development.ICON_DIR +"/"+ new_image_name)
-            # 生成icon图片的url---相对路径
+            
+            # 删除旧头像
+            if user.icon:
+                old_image_name = user.icon.rsplit('/',1)[-1]
+                old_icon_path = os.path.join(settings.Development.ICON_DIR,old_image_name)
+                if os.path.exists(old_icon_path):
+                    try:
+                        os.remove(old_icon_path)
+                    except Exception as e:
+                        print(e)
+                    
+            # 生成icon图片新的url---相对路径
             icon_url = os.path.join('upload/icon/', new_image_name.replace('\\','/'))
             user.icon = icon_url
         

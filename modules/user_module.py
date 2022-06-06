@@ -1,7 +1,7 @@
 from exts import db,cache
 from datetime import datetime
 from modules.base_module import Base
-from flask import session
+from flask import session,g
 from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,PasswordField,FileField,EmailField
 from wtforms.validators import DataRequired,Length,InputRequired,EqualTo,Regexp,ValidationError
@@ -94,17 +94,24 @@ class UserCenterForm(FlaskForm):
     def validate_username(self,field):
         if re.search('^[0-9_]',field.data):
             raise ValidationError(message='用户名不能以数字或者下划线开头')
-        
-        if len(User.query.filter(User.username == field.data).all())>1:
-            raise ValidationError(message='用户名已存在')
-        
+
         if re.search(' ',field.data):
             raise ValidationError(message='用户名不能含有空格')
         
+        # 仅用户名发生变化时验证唯一       
+        if g.user.username != field.data:
+            if User.query.filter(User.username == field.data).first():
+                raise ValidationError(message='用户名已存在')
+
+        
     def validate_email(self,field):
-        if len(User.query.filter(User.email == field.data).all())>1:
-            raise ValidationError(message='邮箱已存在')
+        # 仅当邮箱发生变化时验证唯一
+        if g.user.email != field.data:
+            if User.query.filter(User.email == field.data).first():
+                raise ValidationError(message='邮箱已存在')
     
     def validate_phone(self,field):
-        if len(User.query.filter(User.phone == field.data).all())>1:
-            raise ValidationError(message='手机号已存在')
+        # 仅当手机号发生变化时验证唯一
+        if g.user.phone != field.data:
+            if User.query.filter(User.phone == field.data).first():
+                raise ValidationError(message='手机号已存在')
