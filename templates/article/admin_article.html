@@ -1,0 +1,85 @@
+{% extends 'base.html'%}
+
+{% block title%} <title> 管理文章 </title>{% endblock %}
+
+{% block content %}
+{# 展示文章列表 #}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>管理文章</h1>
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th>序号</th>
+                    <th>标题</th>
+                    <th>作者</th>
+                    <th>分类</th>
+                    <th>发布时间</th>
+                    <th>操作</th>
+                </tr>
+                {% for article in articles %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ article.article_title }}</td>
+                    <td>{{ article.user.username }}</td>
+                    <td>{{ article.article_type.type_name }}</td>
+                    <td>{{ article.create_time }}</td>
+                    <td>
+                        <button type="button" class="btn btn-success"  tag={{ article.id }}> 编辑 </button><span></span>
+                        <button type="button" class="btn btn-danger"  tag={{ article.id }}> 删除 </button><span></span>
+                    </td>
+                {% endfor %}
+              </table>
+        </div>
+
+        {# 分页导航 #}
+        <div class="col-md-12" style="text-align:center;">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                {# 上一页 #}
+                <li class="disabled"><a href="#" aria-label="Previous" ><span aria-hidden="true">&laquo;上一页</span> </a></li>
+                <li class="active" ><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">5</a></li>
+                {# 下一页 #}
+                <li><a href="#" aria-label="Next"><span aria-hidden="true">下一页&raquo;</span></a></li>
+                </ul>
+            </nav>
+        </div
+    
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}  
+
+<script>
+    // 删除文章操作
+    $(function() {
+        $('.btn-danger').click(function(){
+            // 获取点击对象本身
+            let $this = $(this);
+            let aid = $this.attr('tag');
+            // console.log(aid);
+            // let isdelete = confirm("确定删除吗?")
+            if (confirm("确定删除吗?")){
+                $.get('{{ url_for('article.delete') }}',{aid:aid}, function (data,status){
+                    console.log(status);
+                    if (data.code == 200){
+                        location.href = '{{ url_for('article.admarts') }}';
+                    }else{
+                        $this.next('span').text("删除失败");
+                        $this.css('color','red');
+                    }
+                })
+            }
+        })
+    })
+
+</script>
+
+{% endblock %}

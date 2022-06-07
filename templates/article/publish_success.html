@@ -1,0 +1,22 @@
+{% extends 'base.html'%}
+
+{% block title %} <title>发布成功</title> {% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="row">
+  		   <div class="form-group">
+				<div class="col-md-offset-2 col-md-4">
+					<a href="{{url_for('article.publish')}}" class="btn btn-success" role="button">继续发布</a> <a href="{{url_for('article.articles')}}" class="btn btn-primary" role="button">返回首页</a>
+					{# 打印闪现内容 #}
+					{% with messages = get_flashed_messages() %}
+						{% if messages %}
+							{% for message in messages %}
+								<span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+							{% endfor %}
+						{% endif %}
+					{% endwith %}
+				</div>
+  		    </div>
+  	</div>
+{% endblock %}
