@@ -59,7 +59,7 @@ class TitleForm(FlaskForm):
 
 
 class ContentForm(FlaskForm):
-    content  = TextAreaField('content', validators=[Length(max=22000,message="文章内容不能超过22000个字符")])
+    content  = TextAreaField('content', validators=[Length(max=32000,message="文章内容不能超过32000个字符")])
     def validate_content(self,field):
         if len(field.data) < 10:
             raise ValidationError("文章内容不能少于10个字符")

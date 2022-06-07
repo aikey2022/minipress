@@ -67,9 +67,35 @@ def delete_article():
 # 管理文章
 @article_bp.route('/admarts',endpoint='admarts',methods=['GET'])
 def admin_article():
-    # 查询作者所有文章
-    user_articles = Article.query.filter(Article.uid == g.user.id,Article.isdelete != 1).all()
+    # 获取当前分页数默认为1 类型为int
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 10
+
+    # 获取pagination对象
+    pagination = Article.query.filter(Article.uid == g.user.id,Article.isdelete != 1).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
     
-    return render_template('article/admin_article.html',user=g.user,types=g.types,articles=user_articles)
+    #========实现显示固定分页数====================
+
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)
+        
+    
+    return render_template('article/admin_article.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
     
 
