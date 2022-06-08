@@ -44,7 +44,7 @@ def article_publish():
         db.session.add(article)
         db.session.commit()
         flash(message="文章发布成功",category="info")
-        return render_template('article/publish_success.html',user=g.user,types=g.types)
+        return render_template('article/info.html',user=g.user,types=g.types,tip="发布成功")
 
     # 默认展示文章发布页面
     return render_template('article/publish.html',form=form,user=g.user,types=g.types)
@@ -99,8 +99,7 @@ def admin_article():
     else:
         # 3.3 当前页到设置的长度
         middle_page = range(pagination.page,pagination.page+page_control)
-        
-    
+
     return render_template('article/admin_article.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
     
 
@@ -157,15 +156,31 @@ def edit_article():
             # 保存到数据库
             db.session.commit()
             flash(message="修改成功",category="info")
-            return render_template('article/publish_success.html',user=g.user,types=g.types)
+            return render_template('article/info.html',user=g.user,types=g.types,tip="修改成功")
         
         return render_template('article/edit.html',form=form,user=g.user,types=g.types,error="修改失败")
     
     return render_template('article/edit.html',form=form,user=g.user,types=g.types,error="修改失败")
     
 
-# 文章查看
+# 文章详情
+@article_bp.route('/detail',endpoint='detail',methods=['GET'])
+def article_detail():
+    aid = request.args.get('aid',type=int)
+    article = Article.query.filter(and_(Article.id==aid,Article.isdelete==False)).first()
+    if not article:
+        return render_template('article/info.html',user=g.user,types=g.types,tip="您要的文章不存在TAT")
+    
+    # 展示文章
+    return render_template('article/detail.html',user=g.user,types=g.types,article=article)
 
 
+
+
+# 发布文章评论
+@article_bp.route('/comment',endpoint='comment',methods=['GET','POST'])
+@check_login_status
+def article_comment():
+    pass
 
 

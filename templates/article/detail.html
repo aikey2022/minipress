@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %} <title>文章详情</title> {% endblock %}
+
+{% block  myjs %}
+<script src="../../static/tinymce/tinymce.min.js"></script>
+{# 载入富文本编辑器 #}
+<script>
+	tinymce.init({
+		selector: '#comment',
+		content_style: "img {max-width:100%;}",
+		language:'zh_CN',
+		// width: 300,
+		height: 500,
+		plugins : [
+			'emoticons',
+			'advlist',
+			'preview',
+			'searchreplace',
+			'wordcount',
+			'ax_wordlimit',
+			'table',
+			'autolink',
+			'toc',
+			'visualblocks',
+			'autosave',
+			'link',
+			'image',
+			'hr',
+			'insertdatetime',
+			'lists',
+			'preview',
+			'code',
+			'codesample'
+			], 
+		ax_wordlimit_num: 2000,
+		ax_wordlimit_delay: 500,
+		ax_wordlimit_callback: function(editor,txt,num){ editor.execCommand('undo'); },
+		inline: false,
+		toolbar: true,
+		contextmenu: "bold copy ",
+		resize: 'both',
+		branding: false,
+	});
+</script>
+
+{% endblock %}
+
+
+{%  block content %} 
+<div class="container">
+    <div class="row">
+        <div class="col-md-10"> 
+            {# 标题 #}
+            <div class="col-md-12">
+                <h2>{{ article.article_title }}</h2>
+                <br>
+            </div>
+            {# 文章信息 #}
+            
+            <div class="col-md-12">
+                <span class="glyphicon glyphicon-time" aria-hidden="true"></span><span>{{ article.create_time }}</span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span>作者: <strong>{{ article.user.username}}</strong></span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span><span>: </span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span><span>: </span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span><span>浏览量: </span>&nbsp;&nbsp; 
+                <span class="glyphicon glyphicon-comment" aria-hidden="true"></span><span><a href="#comments">评论</a>: </span>&nbsp;&nbsp;
+                <hr style="margin-top: 0;">
+            </div>		
+                    
+            {# 文章内容 #}
+            <div class="col-md-12">
+                <p>
+                    {{ article.content|safe }}
+                </p>
+            </div>
+            
+            {# 评论 #}
+            <div class="col-md-12" id="comments">
+                <hr>
+                评论:
+                <hr>
+            </div>
+            
+            {# 发表评论 #}
+            <div class="col-md-12">
+                <div class="col-md-2"><h4>发布评论:</h4></div> 
+                <div class="col-md-10"><h5>愿您的每句评论，都能给大家的生活添色彩，带来共鸣，带来思索，带来快乐</h5></div>
+                
+                {# 发布评论内容 #}
+                <div class="col-md-12">
+                    <textarea name="" id="comment"  placeholder="快来发布评论吧,255字以内"></textarea>
+                </div>
+
+                <div class="col-md-12" margin-bottom="100px">
+                    <br>
+                    <button class="btn btn-success">发布评论</button> &nbsp;&nbsp; <a class="btn btn-primary" href="{{url_for('article.articles')}}">返回首页</a>
+                    <hr>
+                </div>
+                
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

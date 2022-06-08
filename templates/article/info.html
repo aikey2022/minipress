@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 
-{% block title %} <title>发布成功</title> {% endblock %}
+{% block title %} <title>{% if tip %} {{ tip }} {% else %} 温馨提示 {%endif %}</title> {% endblock %}
 
 {% block content %}
 	<div class="container">
