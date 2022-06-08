@@ -25,7 +25,7 @@
                     <td>{{ article.article_type.type_name }}</td>
                     <td>{{ article.create_time }}</td>
                     <td>
-                        <button type="button" class="btn btn-success"  tag={{ article.id }}> 编辑 </button><span></span>
+                        <a type="button" class="btn btn-success"  href="{{ url_for('article.artedit')}}?aid={{ article.id }}"> 编辑 </a><span></span>
                         <button type="button" class="btn btn-danger"  tag={{ article.id }}> 删除 </button><span></span>
                     </td>
                 {% endfor %}

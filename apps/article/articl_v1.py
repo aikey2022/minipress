@@ -1,3 +1,4 @@
+from re import A
 from flask import Blueprint,render_template,request,redirect,url_for,flash,session,g,jsonify,make_response,abort
 from apps.user.check_login import check_login_status
 from modules.article_module import *
@@ -14,17 +15,18 @@ def article_index():
     return render_template('article/index.html',types=g.types,user=g.user)
 
 
-# 文章发布
+# 发布文章
 @article_bp.route('/publish',endpoint='publish',methods=['GET','POST'])
 @check_login_status
 def article_publish():
     form = ArticleForm()
+
     # 校验通过
     if form.validate_on_submit():
         title = request.form.get('title')
         artilceType = request.form.get('artilceType',type=int)
         content = request.form.get('content')
-        bp_logging.logger.debug(f'{title},{artilceType},{content}')
+        # bp_logging.logger.debug(f'{title},{artilceType},{content}')
         
         # 验证artilceType
         typelist = [type.id for type in g.types]
@@ -50,6 +52,7 @@ def article_publish():
 
 # 文章的删除
 @article_bp.route('/delete',endpoint='delete',methods=['GET','POST'])
+@check_login_status
 def delete_article():
     aid = request.args.get('aid',int)
     # 删除文章---软删除
@@ -57,6 +60,7 @@ def delete_article():
     if article:
         # 更新数据库
         article.isdelete = 1
+        # db.session.delete(article)   # 硬删除
         db.session.commit()
         return jsonify(code=200,msg='ok'),200
     
@@ -66,6 +70,7 @@ def delete_article():
 
 # 管理文章
 @article_bp.route('/admarts',endpoint='admarts',methods=['GET'])
+@check_login_status
 def admin_article():
     # 获取当前分页数默认为1 类型为int
     # 当前页码
@@ -98,4 +103,69 @@ def admin_article():
     
     return render_template('article/admin_article.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
     
+
+# 修改文章
+@article_bp.route('/artedit',endpoint='artedit',methods=['GET','POST'])
+@check_login_status
+def edit_article():
+    form = EditArticleForm()
+    # get请求
+    if request.method == 'GET':
+        # 获取文章ID
+        aid = request.args.get('aid',type=int)
+        # bp_logging.logger.debug(aid)
+        # 查询文章
+        article = Article.query.filter(and_(Article.id==aid,Article.uid==g.user.id,Article.isdelete==False)).first()
+        
+        if not article:
+        # 错误展示
+            return '文章不存在无法编辑!!!'
+        # 没有提交修改
+        form.title.data = article.article_title
+        form.content.data = article.content
+        form.hiddens.data = article.id
+        typeid = article.type_id
+
+        # 默认展示文章编辑页面
+        return render_template('article/edit.html',form=form,typeid=typeid,user=g.user,types=g.types)
+    
+    # POST请求验证
+    if form.validate_on_submit():
+        # 获取标题
+        title = request.form.get('title')
+        # 获取文章类别
+        artilceType = request.form.get('artilceType',type=int)
+        # 获取文章内容
+        content = request.form.get('content')
+        # 获取文章id
+        aid = request.form.get('hiddens',type=int)
+        # 打印日志
+        # bp_logging.logger.debug(f'{title},{artilceType},{content}')
+        
+        # 验证artilceType
+        typelist = [type.id for type in g.types]
+        if artilceType not in typelist:
+            return render_template('article/edit.html',form=form,user=g.user,types=g.types,typeError="必须选择文章类型")
+        
+        # 重新赋值给文章对象
+        article = Article.query.filter(and_(Article.id==aid,Article.uid==g.user.id,Article.isdelete==False)).first()
+        if article:
+            article.article_title = title
+            article.type_id = artilceType
+            article.content = content
+            
+            # 保存到数据库
+            db.session.commit()
+            flash(message="修改成功",category="info")
+            return render_template('article/publish_success.html',user=g.user,types=g.types)
+        
+        return render_template('article/edit.html',form=form,user=g.user,types=g.types,error="修改失败")
+    
+    return render_template('article/edit.html',form=form,user=g.user,types=g.types,error="修改失败")
+    
+
+# 文章查看
+
+
+
 

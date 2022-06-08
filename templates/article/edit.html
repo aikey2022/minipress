@@ -1,0 +1,114 @@
+{% extends 'base.html'%}
+
+{% block title %} <title>编辑文章</title> {% endblock %}
+
+{% block  myjs %}
+<script src="../../static/tinymce/tinymce.min.js"></script>
+{# 载入富文本编辑器 #}
+<script>
+	tinymce.init({
+		selector: '#content',
+		content_style: "img {max-width:100%;}",
+		language:'zh_CN',
+		// width: 300,
+		height: 500,
+		plugins : [
+			'emoticons',
+			'advlist',
+			'preview',
+			'searchreplace',
+			'wordcount',
+			'ax_wordlimit',
+			'table',
+			'autolink',
+			'toc',
+			'visualblocks',
+			'autosave',
+			'link',
+			'image',
+			'hr',
+			'insertdatetime',
+			'lists',
+			'preview',
+			'code',
+			'codesample'
+			], 
+		ax_wordlimit_num: 22000,
+		ax_wordlimit_delay: 500,
+		ax_wordlimit_callback: function(editor,txt,num){ editor.execCommand('undo'); },
+		inline: false,
+		toolbar: true,
+		contextmenu: "bold copy ",
+		resize: 'both',
+		branding: false,
+	});
+</script>
+
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="row">
+ 		<form class="form-horizontal" action="{{ url_for('article.artedit') }}" method="post">
+			{{ form.csrf_token }}
+			{{form.hiddens }}
+			<div class="form-group">
+				<div class="col-md-offset-2  col-md-3" style="text-align: center;">
+				  <h2>编辑文章</h2>
+				</div>
+			</div>
+			
+  		    <div class="form-group">
+  				<label for="title" class="col-md-2 control-label">* 文章标题: </label>
+				<div class="col-md-8">
+					{{ form.title(class="form-control",placeholder='请输入标题')  }} 
+					{# 验证未通过 #}
+					{% if form.title.errors %}<span style="color:red">{{ form.title.errors[0]}}</span>{% endif %}
+				</div>
+  		    </div>
+  		  
+  		  	<div class="form-group">
+  				<label for="artilceType" class="col-md-2 control-label">* 文章分类: </label>
+				<div class="col-md-2">
+					<select name="artilceType" class="form-control">
+						<option value ="0">请选择文章类别</option>
+						{% if types %}
+						{% for type in types %}
+						<option value ="{{type.id}}" {% if typeid and typeid == type.id %} selected="selected" {% endif %}>{{type.type_name}}</option>
+						{% endfor %}
+						{% endif %}
+					  </select>
+					{# 验证未通过 #}
+					{% if typeError %}<span style="color:red">{{ typeError }}</span>{% endif %}
+				</div>
+  		 	 </div>
+
+  		    <div class="form-group">
+				<label for="content" class="col-md-2 control-label">* 文章内容: </label>
+				<div class="col-md-8">
+					{{ form.content(class="form-control",placeholder='请输入文章内容')  }} 
+					{# 验证未通过 #}
+					{% if form.content.errors %}<span style="color:red">{{ form.content.errors[0]}}</span>{% endif %}
+				</div>
+  		    </div>		  
+
+	  
+  		   <div class="form-group">
+				<div class="col-md-offset-2 col-md-4">
+					<button type="submit" class="btn btn-success">确认修改</button>{% if error %}<span style="color:red"> {{ error }}</span>{% endif %}
+					{# 打印闪现内容 #}
+					{% with messages = get_flashed_messages() %}
+					{% if messages %}
+					{% for message in messages %}
+						<span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+					{% endfor %}
+				
+					{% endif %}
+					{% endwith %}
+				</div>
+  		    </div>
+  		</form>
+  
+  	</div>
+  	
+{% endblock %}
