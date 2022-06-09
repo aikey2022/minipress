@@ -23,7 +23,7 @@ def article_index():
     per_page = 20
 
     # 获取pagination对象
-    pagination = Article.query.filter(Article.isdelete != 1).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
+    pagination = Article.query.filter(Article.isdelete == False).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
 
