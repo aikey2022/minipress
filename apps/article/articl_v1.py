@@ -12,6 +12,10 @@ bp_logging = CreateLogging('article_v1','debug')
 # 文章首页
 @article_bp.route('/',endpoint='articles')
 def article_index():
+    # 判断用户是否登录
+    if not session.get('uid') or not cache.get(str(session.get('uid'))):
+        g.user = None
+        
     # 获取当前分页数默认为1 类型为int
     # 当前页码
     current_page = request.args.get('page',1,type=int)
@@ -19,7 +23,7 @@ def article_index():
     per_page = 20
 
     # 获取pagination对象
-    pagination = Article.query.filter(Article.uid == g.user.id,Article.isdelete != 1).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
+    pagination = Article.query.filter(Article.isdelete != 1).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
 
