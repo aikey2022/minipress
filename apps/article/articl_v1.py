@@ -9,9 +9,38 @@ article_bp = Blueprint('article', __name__)
 bp_logging = CreateLogging('article_v1','debug')
 
 
+# 文章首页
 @article_bp.route('/',endpoint='articles')
 def article_index():
-    return render_template('article/index.html',types=g.types,user=g.user)
+    # 获取当前分页数默认为1 类型为int
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 20
+
+    # 获取pagination对象
+    pagination = Article.query.filter(Article.uid == g.user.id,Article.isdelete != 1).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
+    
+    #========实现显示固定分页数====================
+
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)
+
+    return render_template('article/index.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
 
 
 # 发布文章
