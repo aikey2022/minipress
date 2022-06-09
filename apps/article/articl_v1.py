@@ -165,36 +165,87 @@ def edit_article():
 # 文章详情
 @article_bp.route('/detail',endpoint='detail',methods=['GET'])
 def article_detail():
+    form = CommentForm()
+    
     # 判断用户是否登录
     if not session.get('uid') or not cache.get(str(session.get('uid'))):
         g.user = None
-            
+    
+    # 获取文章id        
     aid = request.args.get('aid',type=int)
     article = Article.query.filter(and_(Article.id==aid,Article.isdelete==False)).first()
     if not article:
         return render_template('article/info.html',user=g.user,types=g.types,tip="您找的文章不存在TAT")
+    
+    # 提交评价时需要验证
+    form.hiddens.data = aid
     
     # 收藏状态--已登录用户
     if g.user:
         g.save = Favorites.query.filter(and_(Favorites.uid==g.user.id,Favorites.aid==aid)).first()
     
     # 评论数
-    comments_num = len(Comments.query.filter(Article.id==aid,Comments.isdelete==False).all())
-    favorites_num = len(Favorites.query.filter(Article.id==aid).all())
-    # 展示文章
+    comments_num = len(Comments.query.filter(Comments.art_id==aid,Comments.isdelete==False).all())
+    favorites_num = len(Favorites.query.filter(Favorites.aid==aid).all())
+    
+    # 分页展示评论
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 5
+
+    # 获取pagination对象
+    pagination = Comments.query.filter(and_(Comments.art_id == aid,Comments.isdelete==False)).order_by(-Comments.create_time).paginate(page=current_page,per_page=per_page)
+    
+    #========实现显示固定分页数====================
+
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)
     
     # 每次请求都要刷新浏览量
     article.views += 1
     db.session.commit()
     
-    return render_template('article/detail.html',user=g.user,types=g.types,article=article,comments_num=comments_num,favorites_num=favorites_num)
+    return render_template('article/detail.html',user=g.user,types=g.types,article=article,comments_num=comments_num,favorites_num=favorites_num,form=form,pagination=pagination,middle_page=middle_page)
 
 
 # 发布文章评论
-@article_bp.route('/comment',endpoint='comment',methods=['GET','POST'])
+@article_bp.route('/comment',endpoint='comment',methods=['POST'])
 @check_login_status
 def article_comment():
-    pass
+    form = CommentForm()
+    # 从表单隐藏域获取文章id
+    aid = request.form.get('hiddens')
+    artilce  = Article.query.filter(and_(Article.id==aid,Article.isdelete==False)).first()
+    if not artilce:
+        return render_template('article/info.html',user=g.user,types=g.types,tip="您评论的文章不存在TAT")
+    if form.validate_on_submit():
+        comment = Comments()
+        comment.uid = g.user.id
+        comment.art_id = aid
+        comment.com_content = request.form.get('comment')
+        
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('article.detail')+"?aid="+aid)
+    
+    flash('评论失败',category='info')
+    return render_template('article/info.html',user=g.user,types=g.types)
+
 
 # 文章点赞
 @article_bp.route('/thumbs',endpoint='thumbs',methods=['GET'])

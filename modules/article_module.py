@@ -76,10 +76,7 @@ class TitleForm(FlaskForm):
 
 
 class ContentForm(FlaskForm):
-    content  = TextAreaField('content', validators=[Length(max=32000,message="文章内容不能超过32000个字符")])
-    def validate_content(self,field):
-        if len(field.data) < 10:
-            raise ValidationError("文章内容不能少于10个字符")
+    content  = TextAreaField('content', validators=[Length(min=10,max=32000,message="文章内容需在10-32000字之间")])
 
 
 class HiddensForm(FlaskForm):
@@ -87,8 +84,10 @@ class HiddensForm(FlaskForm):
 
 # ===========================文章类型表单字段 end=======================================================#
 
+
 class ArticleForm(TitleForm,ContentForm):
     pass
+
 
 class EditArticleForm(TitleForm,ContentForm,HiddensForm):
     # 验证标题唯一
@@ -96,3 +95,11 @@ class EditArticleForm(TitleForm,ContentForm,HiddensForm):
         if Article.query.filter(and_(Article.article_title == field.data, Article.uid != g.user.id)).first():
             # print("-------------------------------------->>>>>>>验证标题",field.data)
             raise ValidationError('标题已存在')
+ 
+      
+class CommentForm(HiddensForm):
+    # 评论
+    comment  = TextAreaField('comment', validators=[Length(min=10,max=255,message="评论内容在10-255字之间")])
+
+        
+        

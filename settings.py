@@ -14,7 +14,7 @@ class Config():
     # CSRF 令牌过期时间。默认是 3600 秒
     # WTF_CSRF_TIME_LIMIT = 3600
     
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@10.0.0.101:3306/minipress?charset=utf8'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@10.0.0.101:3306/minipress?charset=utf8mb4'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     
     # redis配置

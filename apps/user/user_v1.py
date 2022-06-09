@@ -71,9 +71,12 @@ def valid_code():
 
 @user_bp.route('/register', endpoint="register",methods=['GET', 'POST'])
 def user_register():
-    if g.user:
+    # 检查重复登录
+    uid = session.get('uid')
+    if uid and cache.get(str(uid)):
         flash('请勿重复注册',category='info')
         return render_template('user/info.html',user=g.user,types=g.types)
+
     uform = UserRegForm()
     # 数据正确 并且验证csrf通过
     if uform.validate_on_submit():  
@@ -104,7 +107,10 @@ def user_register():
 
 @user_bp.route('/login', endpoint="login",methods=['GET', 'POST'])
 def user_login():
-    if g.user:
+    
+    # 检查重复登录
+    uid = session.get('uid')
+    if uid and cache.get(str(uid)):
         flash('您已登录',category='info')
         return render_template('user/info.html',user=g.user,types=g.types)
     
