@@ -1,10 +1,9 @@
-from re import A
 from flask import Blueprint,render_template,request,redirect,url_for,flash,session,g,jsonify,make_response,abort
 from apps.user.check_login import check_login_status
 from modules.article_module import *
 from exts.utils.logsout import CreateLogging
 from sqlalchemy import and_,or_,not_
-
+from exts import cache
 
 article_bp = Blueprint('article', __name__)
 bp_logging = CreateLogging('article_v1','debug')
@@ -166,15 +165,29 @@ def edit_article():
 # 文章详情
 @article_bp.route('/detail',endpoint='detail',methods=['GET'])
 def article_detail():
+    # 判断用户是否登录
+    if not session.get('uid') or not cache.get(str(session.get('uid'))):
+        g.user = None
+            
     aid = request.args.get('aid',type=int)
     article = Article.query.filter(and_(Article.id==aid,Article.isdelete==False)).first()
     if not article:
-        return render_template('article/info.html',user=g.user,types=g.types,tip="您要的文章不存在TAT")
+        return render_template('article/info.html',user=g.user,types=g.types,tip="您找的文章不存在TAT")
     
+    # 收藏状态--已登录用户
+    if g.user:
+        g.save = Favorites.query.filter(and_(Favorites.uid==g.user.id,Favorites.aid==aid)).first()
+    
+    # 评论数
+    comments_num = len(Comments.query.filter(Article.id==aid,Comments.isdelete==False).all())
+    favorites_num = len(Favorites.query.filter(Article.id==aid).all())
     # 展示文章
-    return render_template('article/detail.html',user=g.user,types=g.types,article=article)
-
-
+    
+    # 每次请求都要刷新浏览量
+    article.views += 1
+    db.session.commit()
+    
+    return render_template('article/detail.html',user=g.user,types=g.types,article=article,comments_num=comments_num,favorites_num=favorites_num)
 
 
 # 发布文章评论
@@ -183,4 +196,52 @@ def article_detail():
 def article_comment():
     pass
 
+# 文章点赞
+@article_bp.route('/thumbs',endpoint='thumbs',methods=['GET'])
+def article_thumbs():
+    aid = request.args.get('aid',type=int)
+    article = Article.query.filter(and_(Article.id==aid,Article.isdelete==False)).first()
+    if not article:
+        return jsonify(code=400,msg="点赞失败")
+    
+    # 点赞数加1
+    article.thumbs_up += 1
+    db.session.commit()
+    return jsonify(code=200,num=article.thumbs_up,msg="感谢您的点赞")
 
+
+# 收藏文章
+@article_bp.route('/favorites',endpoint='favorites',methods=['GET'])
+@check_login_status
+def article_favorites():
+    aid = request.args.get('aid',type=int)
+    article = Article.query.filter(and_(Article.id==aid,Article.isdelete==False)).first()
+    if not article:
+        return jsonify(code=400,msg="收藏失败")
+    
+    # 查询用户收藏该文章的记录
+    favorite = Favorites.query.filter(and_(Favorites.uid==g.user.id,Favorites.aid==aid)).first()
+    # 不存在收藏记录
+    if not favorite:
+        favorite =Favorites()
+        favorite.uid = g.user.id
+        favorite.aid = aid
+        favorite.isfavorite = True
+        # 新增收藏记录
+        db.session.add(favorite)
+        islove=1
+        msg = "收藏成功"
+        
+    # 存在收藏记录    
+    else:
+        # 删除搜藏记录
+        db.session.delete(favorite)
+        islove=0
+        msg="取消收藏"
+        
+    db.session.commit()
+    favorites_num = len(Favorites.query.filter(Article.id==aid).all())
+    return jsonify(code=200,islove=islove,num=favorites_num,msg=msg)
+    
+
+    

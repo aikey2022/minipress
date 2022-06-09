@@ -24,6 +24,7 @@ def before_user_bp_request():
     if uid:
        g.user = User.query.filter(User.id == uid).first() 
        # print('-------------------------->>',g.user)
+    
 
 
 
@@ -70,6 +71,9 @@ def valid_code():
 
 @user_bp.route('/register', endpoint="register",methods=['GET', 'POST'])
 def user_register():
+    if g.user:
+        flash('请勿重复注册',category='info')
+        return render_template('user/info.html',user=g.user,types=g.types)
     uform = UserRegForm()
     # 数据正确 并且验证csrf通过
     if uform.validate_on_submit():  
@@ -100,6 +104,10 @@ def user_register():
 
 @user_bp.route('/login', endpoint="login",methods=['GET', 'POST'])
 def user_login():
+    if g.user:
+        flash('您已登录',category='info')
+        return render_template('user/info.html',user=g.user,types=g.types)
+    
     form = UserLogForm()
     if form.validate_on_submit():
         # 获取登陆信息

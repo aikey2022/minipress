@@ -42,6 +42,7 @@
 		resize: 'both',
 		branding: false,
 	});
+
 </script>
 
 {% endblock %}
@@ -60,11 +61,15 @@
             
             <div class="col-md-12">
                 <span class="glyphicon glyphicon-time" aria-hidden="true"></span><span>{{ article.create_time }}</span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span>作者: <strong>{{ article.user.username}}</strong></span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span><span>: </span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span><span>: </span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span><span>浏览量: </span>&nbsp;&nbsp; 
-                <span class="glyphicon glyphicon-comment" aria-hidden="true"></span><span><a href="#comments">评论</a>: </span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span>: <strong>{{ article.user.username}}</strong></span>&nbsp;&nbsp;
+                {#点赞量#}
+                <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span><span>: {{ article.thumbs_up }}</span>&nbsp;&nbsp;
+                {#收藏量#}
+                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" {% if user %} tag="{{ user.id }}" {% endif %} {% if g.save %}style="color:red" {% endif %}></span>:<span>{{ favorites_num }}</span>&nbsp;&nbsp;
+                {#浏览量#}
+                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span><span>: {{ article.views }}</span>&nbsp;&nbsp; 
+                {#评论量#}
+                <span class="glyphicon glyphicon-comment" aria-hidden="true"></span><span><a href="#comments">评论</a>: {{ comments_num }}</span>&nbsp;&nbsp;
                 <hr style="margin-top: 0;">
             </div>		
                     
@@ -104,4 +109,62 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}  
+<script>
+// 点赞操作
+$(function() {
+    $('.glyphicon-thumbs-up').click(function(){
+        // 获取点击对象本身
+        let $this = $(this);
+
+        $.get('{{ url_for('article.thumbs') }}',{aid:{{article.id}}}, function (data){
+                console.log(data);
+                if (data.code == 200){
+                    $this.next('span').text(data.num);
+                }else{
+                    $this.next('span').text(data.msg);
+                }
+            });
+    });
+});
+
+// 收藏操作
+$(function() {
+    $('.glyphicon-star-empty').click(function(){
+        // 获取点击对象本身
+        let $this = $(this);
+        let issave = $this.attr('save');
+        console.log(issave);
+        // 根据属性判断登陆状态
+        if ($this.attr('tag')){
+            $.get('{{ url_for('article.favorites') }}',{aid:{{ article.id }}}, function (data){
+                console.log(data);
+                if (data.code == 200 && data.islove == 1){
+
+                    $this.next('span').text(data.num);
+                    // $this.attr('save',1);
+                    $this.css('color','red');
+                }else{
+                    $this.next('span').text(data.num);
+                   // $this.attr('save',0);
+                    $this.css('color','');
+                }
+            })
+        }else{
+            // 未登录提示
+            let islogin = confirm('你还未登陆,请登录后再操作');
+            if (islogin){
+                // 跳转到登录页面
+                location.href = '{{ url_for("user.login") }}';
+            }
+        }
+
+    })
+});
+
+
+</script>
+
 {% endblock %}
