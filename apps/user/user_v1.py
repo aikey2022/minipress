@@ -102,7 +102,7 @@ def user_register():
         return redirect(url_for('user.register'))
     
     # 默认展示注册页面
-    return render_template('user/register.html',form=uform)
+    return render_template('user/register.html',form=uform,types=g.types)
 
 
 @user_bp.route('/login', endpoint="login",methods=['GET', 'POST'])
@@ -144,7 +144,7 @@ def user_login():
         # 登录失败
         return render_template('user/login.html',form=form,types=g.types,error="用户名或者密码错误") 
     # 默认展示登陆页面    
-    return render_template('user/login.html',form=form)
+    return render_template('user/login.html',form=form,types=g.types)
 
 
 # 退出登录

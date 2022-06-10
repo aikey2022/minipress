@@ -5,3 +5,12 @@
     overflow: hidden;
     height: 50px;
 }
+
+/*所有a标签样式调整*/
+a{
+    text-decoration: none;
+    font-size: 15px;
+    color: black;
+}
+
+a:hover a:hover, a:visited, a:link, a:active {text-decoration: none;}

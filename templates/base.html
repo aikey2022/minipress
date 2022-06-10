@@ -7,8 +7,8 @@
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
 	{% block title %} <title>Base Template</title> {% endblock %}
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" href="../static/css/icon.css">
+    <link  type="text/css" rel="stylesheet" href="{{url_for('static',filename='bootstrap/css/bootstrap.min.css')}}">
+	<link  type="text/css" rel="stylesheet" href="{{url_for('static',filename='css/icon.css')}}">
 	{% block style %} {% endblock %}
 	{% block  myjs %} {% endblock %}
     <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
@@ -91,9 +91,9 @@
 	{% endblock %}
 
     <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
-    <script src="../static/jquery/jquery-3.6.0.min.js"></script>
+    <script src="{{url_for('static',filename='jquery/jquery-3.6.0.min.js')}}"></script>
     <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
-    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{url_for('static',filename='bootstrap/js/bootstrap.min.js')}}"></script>
 	{% block scripts %}  {% endblock %}
 	
   </body>

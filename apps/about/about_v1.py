@@ -13,6 +13,13 @@ about_bp = Blueprint('about', __name__)
 
 @about_bp.route('/aboutme', endpoint="aboutme",methods=['GET'])
 def aboutme():
+    uid = session.get('uid')
+    if uid and cache.get(str(uid)):
+        user = User.query.filter(User.id == uid).first()
+        g.user =user
+    else:
+        g.user = None
+        
     about = AboutMe.query.first()
     return render_template('about/show_about.html',user=g.user,types=g.types,about=about)
 

@@ -4,11 +4,15 @@
 
 {% block content %} 
 
-<div class="jumbotron" style="padding:20px">
+
+<div class="jumbotron" >
+	<div class="container">
 	<h1>About Me</h1>
 	<p>{{ about.content |safe }} <br /> <span style="color:gray;font-size:16px"><strong> {{ about.create_time}} </strong></span></p>
 
 	<p><a class="btn btn-primary btn-lg" href="{{url_for('article.publish')}}" role="button">发布文章</a> <a class="btn btn-success btn-lg" href="{{url_for('article.articles')}}" role="button">返回首页</a></p>
-  </div>
+	</div>
+</div>
+
 
 {% endblock %}
