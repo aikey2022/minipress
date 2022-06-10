@@ -14,5 +14,7 @@ logs
 **/**/**/**/logs
 
 static/upload
+static/images
 
 migrations
+

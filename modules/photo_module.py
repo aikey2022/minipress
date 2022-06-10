@@ -23,4 +23,8 @@ class Hidden(FlaskForm):
     
     
 class PhotoForm(Hidden):
-    file = FileField('file',validators=[FileRequired(message="必须存在文件"),FileSize(max_size=1024*1024*10,message='图片大小不能超过10MB'),FileAllowed(['jpg','png','jpeg','gif'], '只能上传10MB以内图片')])
+    file = FileField('file',validators=[FileRequired(message="必须存在文件"),FileSize(max_size=1024*1024*10,message='图片大小不能超过10MB'),FileAllowed(['jpg','png','jpeg','gif'], '只能上传20MB以内图片')])
+    
+    
+    
+

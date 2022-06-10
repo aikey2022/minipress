@@ -34,11 +34,11 @@
 {# 展示已上传的图片 #}
 <div class="container">
 	<div class="row">
-		{% if photos %}
-		{% for pic in photos %}
+		{% if pagination.items|length > 0 %}
+		{% for pic in pagination.items %}
 		<div class="col-sm-6 col-md-3">
 		  <div class="thumbnail">
-			<img width="210px" height="210px" src="{{url_for('static',filename=pic.pic_url)}}" alt="">
+			<img style="width:210px; height:210px"  src="{{url_for('static',filename=pic.pic_url)}}" alt="">
 			<div class="caption">
 			  <h5 style="color: gray;text-align: center">{{pic.create_time}}</h5>
 			  <p align="center"><button class="btn btn-danger" role="button" tag="{{ pic.id }}">删除</button><span></span>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{url_for('static',filename=pic.pic_url)}}" target="_blank" class="btn btn-success" role="button">原图</a></p>
@@ -52,7 +52,37 @@
 		</div>
 	   {% endif %}
 	</div>
+
+        {# 分页导航 #}
+        <div class="col-md-12" style="text-align:center;">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {# 上一页 #}
+                    {% if not pagination.has_prev %}
+                    <li class="disabled"><span aria-hidden="true">&laquo;上一页</span></li>
+                    {% else %}
+                    <li><a href="{{url_for('photo.adminpic') }}?page={{ pagination.prev_num }}" aria-label="Previous" ><span aria-hidden="true">&laquo;上一页</span> </a></li>
+                    {% endif %}
+
+                    {% for page_num in middle_page %}
+                    <li {% if page_num == pagination.page %} class="active" {% endif %} ><a href="{{url_for('photo.adminpic') }}?page={{ page_num }}">{{ page_num }}</a></li>
+                    {% endfor %}
+
+                    {# 下一页 #}
+                    {% if not pagination.has_next %}
+                    <li class="disabled"><span aria-hidden="true">下一页&raquo;</span></li>
+                    {% else %}
+                    <li><a href="{{url_for('photo.adminpic') }}?page={{ pagination.next_num }}" aria-label="Next"><span aria-hidden="true">下一页&raquo;</span></a></li>
+                    {% endif %}
+                    <li><span>总页数: {{ pagination.pages }}</span></li>
+                </ul>
+            </nav>
+        </div>
 </div>
+{# 分割线 #}
+<div class="col-md-12" > <hr /> </div>
+
+
 
 {% endblock %}
 

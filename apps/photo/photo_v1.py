@@ -5,14 +5,49 @@ from flask import Blueprint,render_template,request,redirect,url_for,flash,sessi
 from sqlalchemy import and_
 from werkzeug.utils import secure_filename
 import time,settings,os
-
+from exts import cache
 
 photo_bp = Blueprint('photo',__name__)
 
 
 @photo_bp.route('/showpics',endpoint="showpics",  methods=['GET'])
 def photo_showpics():
-    pass
+    # 获取uid
+    uid = session.get('uid')
+    user = cache.get(str(uid))
+    if not uid or not user:
+        g.user = None
+        
+    # 查看询图片
+    # 获取当前分页数默认为1 类型为int
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 8
+
+    # 获取pagination对象
+    pagination = Photo.query.order_by(-Photo.create_time).paginate(page=current_page,per_page=per_page)
+    
+    #========实现显示固定分页数====================
+
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)
+
+    return render_template('photo/showpic.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)    
 
 
 
@@ -50,15 +85,41 @@ def photo_admin():
         photo.pic_url = f'upload/photo/{newfilename}'
         db.session.add(photo)
         db.session.commit()
-        return redirect(url_for('photo.adminpic'))
+        # return redirect(url_for('photo.adminpic'))
         
     # get请求
     form.hidden.data = uid
     
     # 查看询图片
-    pics =  Photo.query.filter(Photo.uid == uid).order_by(-Photo.create_time).all()
+    # 获取当前分页数默认为1 类型为int
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 8
 
-    return render_template('photo/admpic.html',user=g.user,types=g.types,form=form,photos=pics)
+    # 获取pagination对象
+    pagination = Photo.query.filter(Photo.uid == uid).order_by(-Photo.create_time).paginate(page=current_page,per_page=per_page)
+    
+    #========实现显示固定分页数====================
+
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)
+
+    return render_template('photo/admpic.html',user=g.user,types=g.types,form=form,pagination=pagination,middle_page=middle_page)
 
 
 # 删除图片
