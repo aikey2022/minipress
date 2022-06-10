@@ -32,7 +32,8 @@ def setabout():
     uid = session.get('uid')
     # 设置隐藏uid
     form.hidden.data = uid
-    
+
+    # POST请求
     if form.validate_on_submit():
         # 获取uid
         get_uid = request.form.get('hidden')
@@ -57,4 +58,10 @@ def setabout():
         # 提交数据
         db.session.commit()
         flash('设置成功', category='info')
+        return render_template('about/set_about.html',user=g.user,types=g.types,form=form)
+        
+    # GET请求
+    aboutme= AboutMe.query.filter(User.id == uid).first()
+    if aboutme:
+        form.content.data = aboutme.content
     return render_template('about/set_about.html',user=g.user,types=g.types,form=form)
