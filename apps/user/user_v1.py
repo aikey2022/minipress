@@ -34,12 +34,9 @@ def user_index():
     # 根据缓存查询用户登陆状态
     if cache.get(str(session.get('uid'))):
         g.user = User.query.filter(User.id == session.get('uid')).first()
-        # 登陆状态
-        if g.user:
-            return render_template('user/index.html',types=g.types,user=g.user)
-    
+   
     # 非登陆状态
-    return render_template('user/index.html',types=g.types)
+    return redirect(url_for('article.articles'))
 
 
 
@@ -139,7 +136,7 @@ def user_login():
             g.user = user
             flash("登陆成功^_^", category="info")
             bp_logging.logger.debug('登陆成功')
-            return redirect(url_for('user.index'))
+            return redirect(url_for('article.articles'))
         
         # 登录失败
         return render_template('user/login.html',form=form,types=g.types,error="用户名或者密码错误") 
