@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %} <title>信息设置</title> {% endblock %}
+
+{% block  myjs %} 
+<script src="../../static/tinymce/tinymce.min.js"></script>
+{# 载入富文本编辑器 #}
+<script>
+	tinymce.init({
+		selector: '#content',
+		content_style: "img {max-width:100%;}",
+		language:'zh_CN',
+		// width: 300,
+		height: 500,
+		plugins : [
+			'emoticons',
+			'advlist',
+			'preview',
+			'searchreplace',
+			'wordcount',
+			'ax_wordlimit',
+			'table',
+			'autolink',
+			'toc',
+			'visualblocks',
+			'autosave',
+			'link',
+			'image',
+			'hr',
+			'insertdatetime',
+			'lists',
+			'preview',
+			'code',
+			'codesample'
+			], 
+		ax_wordlimit_num: 3200000,
+		ax_wordlimit_delay: 500,
+		ax_wordlimit_callback: function(editor,txt,num){ editor.execCommand('undo'); },
+		inline: false,
+		toolbar: true,
+		contextmenu: "bold copy ",
+		resize: 'both',
+		branding: false,
+	});
+</script>
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="row">
+			<form class="form-horizontal" action="{{ url_for('about.setabout') }}" method="post">
+				{{ form.csrf_token }}
+				{{ form.hidden }}
+				<div class="form-group">
+					<div class="col-md-offset-2  col-md-3" style="text-align: center;">
+						<h2>设置关于本站</h2>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label for="content" class="col-md-2 control-label">* 信息内容: </label>
+					<div class="col-md-10">
+						{{ form.content(class="form-control",placeholder='请输入内容')  }} 
+						{# 验证未通过 #}
+						{% if form.content.errors %}<span style="color:red">{{ form.content.errors[0]}}</span>{% endif %}
+					</div>
+				</div>		  
+
+				<div class="form-group">
+					<div class="col-md-offset-2 col-md-4">
+						<button type="submit" class="btn btn-default">确认发布</button>
+						{# 打印闪现内容 #}
+						{% with messages = get_flashed_messages() %}
+						{% if messages %}
+							{% for message in messages %}
+								<span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+							{% endfor %}
+						{% endif %}
+						{% endwith %}
+					</div>
+				</div>
+			</form>
+        </div>
+  	</div>
+</div>
+{% endblock %}

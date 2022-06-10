@@ -76,7 +76,7 @@ class TitleForm(FlaskForm):
 
 
 class ContentForm(FlaskForm):
-    content  = TextAreaField('content', validators=[Length(min=10,max=32000,message="文章内容需在10-32000字之间")])
+    content  = TextAreaField('content', validators=[Length(min=10,max=3200000,message="文章内容需在10-320000字之间")])
 
 
 class HiddensForm(FlaskForm):

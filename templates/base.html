@@ -31,7 +31,7 @@
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav">
 			<li class="active"><a href="{{url_for('article.articles') }}"> 首页 <span class="sr-only"></span></a></li>
-			<li><a href="#">关于本站</a></li>
+			<li><a href="{{url_for('about.aboutme')}}">了解我</a></li>
 			<li><a href="#">站点相册</a></li>
 			<li><a href="#">留言板</a></li>
 			<li class="dropdown">
@@ -70,7 +70,7 @@
 				<li><a href="{{url_for('article.admarts')}}"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 管理文章</a></li>
 				<li><a href="#"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> 管理相册</a></li>
 				<li><a href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 管理留言</a></li>
-				<li><a href="#"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> 设置关于本站</a></li>
+				<li><a href="{{url_for('about.setabout')}}"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> 设置了解我</a></li>
 				<li role="separator" class="divider"></li>
 				<li><a href="{{ url_for('user.logout') }}"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> 退出</a></li>
 			  </ul>
