@@ -9,10 +9,14 @@
 				<div class="col-md-offset-2 col-md-4">
 					<a href="{{url_for('article.publish')}}" class="btn btn-success" role="button">发布文章</a> <a href="{{url_for('article.articles')}}" class="btn btn-primary" role="button">返回首页</a>
 					{# 打印闪现内容 #}
-					{% with messages = get_flashed_messages() %}
+					{% with messages = get_flashed_messages(with_categories=true) %}
 						{% if messages %}
-							{% for message in messages %}
-								<span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+							{% for category,message in messages %}
+							{% if category == 'error' %}
+								<span style="color:red; font-size:12px; font-weight:bold">{{ message }}</span>
+							{% elif category == 'info'%}
+								<span style="color:green; font-size:12px; font-weight:bold">{{ message }}</span>
+							{% endif %}
 							{% endfor %}
 						{% endif %}
 					{% endwith %}

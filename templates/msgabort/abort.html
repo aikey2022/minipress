@@ -60,7 +60,7 @@
                 {% if  pagination.items|length > 0 %}
                 {% for msg in pagination.items %}
                 {# 留言时间 #}
-                <div class="col-md-12"><img width="40px" height="40px"src="{{ url_for('static',filename=msg.user.icon)}}"/><strong>{{ msg.user.username }}</strong></div>
+                <div class="col-md-12"><img width="40px" height="40px"src="{{ url_for('static',filename=msg.user.icon)}}"/>&nbsp;&nbsp;<strong>{{ msg.user.username }}</strong></div>
                 <div class="col-md-12"><p>{{ msg.msg_content|safe }}</p></div>
                 <div class="col-md-12"><span style="color:gray">{{ msg.create_time }}</span></div>
                 {% if not loop.last %}<div class="col-md-12"><hr /> </div>{% endif %}

@@ -58,7 +58,7 @@ def msg_publishaborts():
     # 从表单隐藏域获取用户id
     uid = request.form.get('hidden')
     if not uid or uid != str(g.user.id):
-        flash('非法用户无法留言',category='info')
+        flash('非法用户无法留言',category='error')
         return render_template('msgabort/info.html',user=g.user,types=g.types,form=form)
     
     if form.validate_on_submit():
@@ -70,7 +70,7 @@ def msg_publishaborts():
         db.session.commit()
         return redirect(url_for('msg_abort.aborts'))
     
-    flash('留言失败',category='info')
+    flash('留言失败',category='error')
     return render_template('msgabort/info.html',user=g.user,types=g.types,form=form)
 
 

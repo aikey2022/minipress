@@ -100,6 +100,10 @@ class EditArticleForm(TitleForm,ContentForm,HiddensForm):
 class CommentForm(HiddensForm):
     # 评论
     comment  = TextAreaField('comment', validators=[Length(min=10,max=255,message="评论内容在10-255字之间")])
+    
+    
+class SearchForm(FlaskForm):
+    keywords = StringField('keywords', validators=[DataRequired(),InputRequired(message="必须输入搜索关键字"),Length(min=1,max=100,message="搜索关键字不能超过100个字符")])
 
         
         

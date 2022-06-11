@@ -42,7 +42,7 @@ def setabout():
         
         # 校验uid是否有效
         if not get_uid or get_uid != str(uid):
-            flash('非法用户,无法设置信息', category='info')
+            flash('非法用户,无法设置信息', category='error')
             return render_template('about/info.html')
         
         # 校验是否已经有关于的设置

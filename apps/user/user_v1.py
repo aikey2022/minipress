@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from exts import db,cache,csrf
 from exts.utils.valid_code import image_code
 from modules.user_module import User,UserRegForm,UserLogForm,UserCenterForm
-from modules.article_module import Article_Type
+from modules.article_module import *
 import os,time,io,settings
 from sqlalchemy import and_
 from apps.user.check_login import check_login_status
@@ -71,7 +71,7 @@ def user_register():
     # 检查重复登录
     uid = session.get('uid')
     if uid and cache.get(str(uid)):
-        flash('请勿重复注册',category='info')
+        flash('请勿重复注册',category='error')
         return render_template('user/info.html',user=g.user,types=g.types)
 
     uform = UserRegForm()
@@ -108,7 +108,7 @@ def user_login():
     # 检查重复登录
     uid = session.get('uid')
     if uid and cache.get(str(uid)):
-        flash('您已登录',category='info')
+        flash('您已登录',category='error')
         return render_template('user/info.html',user=g.user,types=g.types)
     
     form = UserLogForm()

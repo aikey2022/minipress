@@ -63,7 +63,7 @@ def photo_admin():
         # 校验get_uid
         get_uid = request.form.get('hidden')
         if get_uid != str(uid):
-            flash('非法操作,上传失败TAT',category='info')
+            flash('非法操作,上传失败TAT',category='error')
             return render_template('photo/info.html',user=g.user,types=g.types)
         
         pic = form.file.data

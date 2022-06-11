@@ -47,9 +47,9 @@
 			  </ul>
 			</li>
 		  </ul>
-		  <form class="navbar-form navbar-left">
+		  <form class="navbar-form navbar-left" action="{{url_for('article.search')}}" method="get" >
 			<div class="form-group">
-			  <input type="text" class="form-control" placeholder="输入标题/关键字">
+			  <input type="text" name="keywords" class="form-control" required placeholder="输入标题/关键字">
 			</div>
 			<button type="submit" class="btn btn-default">搜索</button>
 		  </form>

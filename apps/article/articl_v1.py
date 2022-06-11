@@ -4,6 +4,8 @@ from modules.article_module import *
 from exts.utils.logsout import CreateLogging
 from sqlalchemy import and_,or_,not_
 from exts import cache
+import re
+
 
 article_bp = Blueprint('article', __name__)
 bp_logging = CreateLogging('article_v1','debug')
@@ -276,7 +278,7 @@ def article_comment():
         db.session.commit()
         return redirect(url_for('article.detail')+"?aid="+aid)
     
-    flash('评论失败',category='info')
+    flash('评论失败',category='error')
     return render_template('article/info.html',user=g.user,types=g.types)
 
 
@@ -329,3 +331,45 @@ def article_favorites():
     
 
     
+# 检索文章
+@article_bp.route('/seach',endpoint='search',methods=['GET', 'POST'])
+def article_seach():
+    # 判断用户是否登录
+    if not session.get('uid') or not cache.get(str(session.get('uid'))):
+        g.user = None    
+         
+    keywords = request.args.get('keywords')
+    # 容错处理
+    if not keywords or len(keywords.replace(' ','').strip()) < 1 or re.search('^$',keywords):
+        flash(message='请输入合法的搜索关键字',category='error')
+        pagination = None
+        return render_template('article/search.html',user=g.user,types=g.types,pagination=pagination)
+    # 查询文章
+    # 分页展示搜索结果
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 5
+    pagination = Article.query.filter(and_(Article.article_title.contains(keywords),Article.isdelete==False)).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
+    #========实现显示固定分页数====================
+
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)  
+            
+    return render_template('article/search.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)      
+        
+        
