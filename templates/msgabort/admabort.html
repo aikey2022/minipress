@@ -93,7 +93,7 @@ table {
                         location.href = '{{ url_for('msg_abort.admaborts') }}';
                     }else{
                         $this.next('span').text("删除失败");
-                        $this.css('color','red');
+                        $this.next('span').css('color','red');
                     }
                 })
             }
