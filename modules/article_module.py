@@ -104,6 +104,19 @@ class CommentForm(HiddensForm):
     
 class SearchForm(FlaskForm):
     keywords = StringField('keywords', validators=[DataRequired(),InputRequired(message="必须输入搜索关键字"),Length(min=1,max=100,message="搜索关键字不能超过100个字符")])
+    
+
+class AddtypeForm(FlaskForm):
+    type_name = StringField('type_name', validators=[DataRequired(message="必须输入分类名称且不含空格"),InputRequired(message="必须输入分类名称且不含空格"),Length(min=2,max=20,message="名称不能超过20个字")])
+    
+    def validate_type_name(self,field):
+        # 分类名称不能含有空格
+        if field.data.replace(" ","") != field.data or field.data.replace(" ","") == "":
+            raise ValidationError('分类名称不能含有空格')
+        
+        # 验证分类名称唯一
+        if field.data.lower() in [t.type_name.lower() for t in Article_Type.query.all()]:
+            raise ValidationError('分类名称已存在')
 
         
         

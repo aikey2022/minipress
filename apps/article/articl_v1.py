@@ -411,6 +411,27 @@ def article_admtype():
 
 
 # 分类新增
+@article_bp.route('/addtype',endpoint='addtype',methods=['GET','POST'])
+@check_login_status
+def adm_addtype():
+    form = AddtypeForm()
+
+    # 校验通过
+    if form.validate_on_submit():
+        typeName = request.form.get('type_name')
+        
+        # 创建文章对象
+        newtype = Article_Type()
+        newtype.type_name = typeName
+        
+        # 保存到数据库
+        db.session.add(newtype)
+        db.session.commit()
+        flash(message="新增分类成功",category="info")
+
+    # 默认展示分类管理页面
+    return render_template('article/add_type.html',form=form,user=g.user,types=g.types)
+
 
 # 分类删除
 @article_bp.route('/deltype',endpoint='deltype',methods=['GET', 'POST'])
@@ -431,5 +452,5 @@ def article_deltype():
 
 # 分类修改
 
-# 分类查询
+
 

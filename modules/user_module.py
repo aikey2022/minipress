@@ -40,6 +40,9 @@ class UsernameForm(FlaskForm):
         if User.query.filter(User.username == field.data).first():
             raise ValidationError(message='用户名已存在')
         
+        # if field.data.lower() in [ User.username.lower() for user in User.query.all() ]:
+        #     raise ValidationError(message='用户名已存在')
+        
         if re.search(' ',field.data):
             raise ValidationError(message='用户名不能含有空格')
 
