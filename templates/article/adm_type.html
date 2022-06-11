@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 
-{% block title%} <title> 管理文章 </title>{% endblock %}
+{% block title%} <title> 分类管理 </title>{% endblock %}
 {% block style %} 
 <style>
 {# 去掉鼠标悬浮下划线 #}
@@ -20,26 +20,22 @@ table {
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>管理文章</h1>
+            <h1>分类管理</h1>
             <table class="table table-bordered table-hover">
                 <tr>
                     <th>序号</th>
-                    <th width="45%">标题</th>
-                    <th>作者</th>
-                    <th>分类</th>
-                    <th>发布时间</th>
+                    <th width="45%">分类名称</th>
+                    <th>创建时间</th>
                     <th>操作</th>
                 </tr>
-                {% for article in pagination.items %}
+                {% for art_type in pagination.items %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td ><a href="{{ url_for('article.detail') }}?aid={{ article.id}}" target="_blank">{{ article.article_title }}</a></td>
-                    <td>{{ article.user.username }}</td>
-                    <td>{{ article.article_type.type_name }}</td>
-                    <td>{{ article.create_time }}</td>
+                    <td ><a href="#?tid={{ art_type.id}}" target="_blank">{{ art_type.type_name }}</a></td>
+                    <td>{{ art_type.create_time }}</td>
                     <td>
-                        <a type="button" class="btn btn-success"  href="{{ url_for('article.artedit')}}?aid={{ article.id }}"> 编辑 </a><span></span>
-                        <button type="button" class="btn btn-danger"  tag={{ article.id }}> 删除 </button><span></span>
+                        <a type="button" class="btn btn-success"  href="#?aid={{ art_type.id }}"> 编辑 </a><span></span>
+                        <button type="button" class="btn btn-danger"  tag={{ art_type.id }}> 删除 </button><span></span>
                     </td>
                 {% endfor %}
               </table>
@@ -86,14 +82,14 @@ table {
         $('.btn-danger').click(function(){
             // 获取点击对象本身
             let $this = $(this);
-            let aid = $this.attr('tag');
+            let type_id = $this.attr('tag');
             // console.log(aid);
             // let isdelete = confirm("确定删除吗?")
             if (confirm("确定删除吗?")){
-                $.get('{{ url_for('article.delete') }}',{aid:aid}, function (data,status){
+                $.get('{{ url_for('article.deltype') }}',{type_id:type_id}, function (data,status){
                     console.log(status);
                     if (data.code == 200){
-                        location.href = '{{ url_for('article.admarts') }}';
+                        location.href = '{{ url_for('article.admtype') }}';
                     }else{
                         $this.next('span').text("删除失败");
                         $this.next('span').css('color','red');

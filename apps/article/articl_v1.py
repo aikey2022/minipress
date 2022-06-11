@@ -372,4 +372,64 @@ def article_seach():
             
     return render_template('article/search.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)      
         
-        
+
+
+# 文章分类管理
+@article_bp.route('/admtype',endpoint='admtype',methods=['GET', 'POST'])
+@check_login_status
+def article_admtype():
+    # 获取当前分页数默认为1 类型为int
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 10
+
+    # 获取pagination对象
+    pagination = Article_Type.query.filter(Article_Type.isdelete == False).paginate(page=current_page,per_page=per_page)
+    
+    #========实现显示固定分页数====================
+
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)
+
+    return render_template('article/adm_type.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
+    
+
+
+# 分类新增
+
+# 分类删除
+@article_bp.route('/deltype',endpoint='deltype',methods=['GET', 'POST'])
+@check_login_status
+def article_deltype():
+    type_id = request.args.get('type_id',int)
+    # 删除文章---软删除
+    art_type =  Article_Type.query.filter(Article_Type.id==type_id).first()
+    if art_type:
+        # 更新数据库
+        art_type.isdelete = 1
+        # db.session.delete(art_type)   # 硬删除
+        db.session.commit()
+        return jsonify(code=200,msg='ok'),200
+    
+    # 删除失败
+    return jsonify(code=400,msg='failed'),400
+
+# 分类修改
+
+# 分类查询
+
