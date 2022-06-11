@@ -3,7 +3,7 @@
 {% block title %} <title>发布文章</title> {% endblock %}
 
 {% block  myjs %}
-<script src="../../static/tinymce/tinymce.min.js"></script>
+<script src="{{url_for('static',filename='tinymce/tinymce.min.js')}}"></script>
 {# 载入富文本编辑器 #}
 <script>
 	tinymce.init({

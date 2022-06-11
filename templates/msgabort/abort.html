@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %} <title>留言板</title> {% endblock %}
+
+{% block  myjs %}
+<script src="{{url_for('static',filename='tinymce/tinymce.min.js')}}"></script>
+{# 载入富文本编辑器 #}
+<script>
+	tinymce.init({
+		selector: '#msg_content',
+		content_style: "img {max-width:100%;}",
+		language:'zh_CN',
+		// width: 300,
+		height: 500,
+		plugins : [
+			'emoticons',
+			'advlist',
+			'preview',
+			'searchreplace',
+			'wordcount',
+			'ax_wordlimit',
+			'table',
+			'autolink',
+			'toc',
+			'visualblocks',
+			'autosave',
+			'link',
+			'image',
+			'hr',
+			'insertdatetime',
+			'lists',
+			'preview',
+			'code',
+			'codesample'
+			], 
+		ax_wordlimit_num: 2000,
+		ax_wordlimit_delay: 500,
+		ax_wordlimit_callback: function(editor,txt,num){ editor.execCommand('undo'); },
+		inline: false,
+		toolbar: true,
+		contextmenu: "bold copy ",
+		resize: 'both',
+		branding: false,
+	});
+
+</script>
+
+{% endblock %}
+
+
+{%  block content %} 
+<div class="container">
+    <div class="row">
+        <div class="col-md-10"> 
+
+            {# 展示留言 #}
+            <div class="col-md-12" id="msgs">
+                <hr />
+                <div class="col-md-12"> <h4>留言: </h4> </div>
+                {% if  pagination.items|length > 0 %}
+                {% for msg in pagination.items %}
+                {# 留言时间 #}
+                <div class="col-md-12"><img width="40px" height="40px"src="{{ url_for('static',filename=msg.user.icon)}}"/><strong>{{ msg.user.username }}</strong></div>
+                <div class="col-md-12"><p>{{ msg.msg_content|safe }}</p></div>
+                <div class="col-md-12"><span style="color:gray">{{ msg.create_time }}</span></div>
+                {% if not loop.last %}<div class="col-md-12"><hr /> </div>{% endif %}
+                {# 留言内容 #}
+                {% endfor %}
+                {% else %}
+                <div class="col-md-12"><strong>暂无留言,赶快发表留言吧</strong></div>
+
+                {% endif %}
+            </div>
+
+            {# 留言分页导航条 #}
+            <div class="col-md-12" style="text-align:center;">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {# 上一页 #}
+                        {% if not pagination.has_prev %}
+                        <li class="disabled"><span aria-hidden="true">&laquo;上一页</span></li>
+                        {% else %}
+                        <li><a href="{{url_for('msg_abort.aborts') }}?page={{ pagination.prev_num }}#msgs" aria-label="Previous" ><span aria-hidden="true">&laquo;上一页</span> </a></li>
+                        {% endif %}
+        
+                        {% for page_num in middle_page %}
+                        <li {% if page_num == pagination.page %} class="active" {% endif %} ><a href="{{url_for('msg_abort.aborts') }}?page={{ page_num }}#msgs">{{ page_num }}</a></li>
+                        {% endfor %}
+        
+                        {# 下一页 #}
+                        {% if not pagination.has_next %}
+                        <li class="disabled"><span aria-hidden="true">下一页&raquo;</span></li>
+                        {% else %}
+                        <li><a href="{{url_for('msg_abort.aborts') }}?page={{ pagination.next_num }}#msgs" aria-label="Next"><span aria-hidden="true">下一页&raquo;</span></a></li>
+                        {% endif %}
+                        <li><span>总页数: {{ pagination.pages }}</span></li>
+                    </ul>
+                </nav>
+            </div>
+
+            {# 分割线 #}
+            <div class="col-md-12"><hr /> </div>
+
+
+            <div class="col-md-12">
+                <div class="col-md-2"><h4>发布留言:</h4></div> 
+                <div class="col-md-10"><h5>愿您的每句留言，都能给大家的生活添色彩，带来共鸣，带来思索，带来快乐</h5></div>
+            </div>
+
+            <form class="form-horizontal" action="{{ url_for('msg_abort.publishaborts') }}" method="post">
+                {{ form.csrf_token }}
+                {{ form.hidden }}
+                {# 发布留言内容 #}
+                <div class="col-md-12">
+                    {% if user %}
+					{{ form.msg_content(class="form-control",placeholder='快来发布留言吧,255字以内')  }} 
+
+                    {% else %}
+                    {{ form.msg_content(class="form-control",placeholder='请登录后发表留言,255字以内')  }} 
+                    {%  endif %}
+					{# 验证未通过 #}
+					{% if form.msg_content.errors %}<span style="color:red">{{ form.msg_content.errors[0]}}</span>{% endif %}
+                </div>
+
+                <div class="col-md-12" margin-bottom="100px">
+                    <br />
+                    <button type="submit" class="btn btn-success">发布留言</button> &nbsp;&nbsp; <a class="btn btn-primary" href="{{url_for('article.articles')}}">返回首页</a>
+					{# 打印闪现内容 #}
+					{% with messages = get_flashed_messages() %}
+					{% if messages %}
+					{% for message in messages %}
+						<span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+					{% endfor %}
+				
+					{% endif %}
+					{% endwith %}
+                    <hr />
+                </div>
+            </form>    
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

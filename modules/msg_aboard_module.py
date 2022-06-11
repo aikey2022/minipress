@@ -1,5 +1,12 @@
 from modules.base_module import Base
 from exts import db
+from flask_wtf import FlaskForm
+from wtforms import HiddenField,TextAreaField
+from wtforms.validators import Length,ValidationError
+
+
+
+
 
 
 class MsgAboard(Base):
@@ -12,3 +19,15 @@ class MsgAboard(Base):
     
     def __str__(self):
         return self.content
+    
+    
+    
+
+
+# ======留言板form========
+class Hidden(FlaskForm):
+    hidden = HiddenField('hidden')
+    
+    
+class MsgAboardForm(Hidden):
+    msg_content = TextAreaField('msg_content', validators=[Length(min=1, max=255,message='留言内容不能为空')])

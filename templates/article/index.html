@@ -34,7 +34,7 @@ a:hover a:hover, a:visited, a:link, a:active {text-decoration: none;}
               <div class="panel-body">
                 <div class="col-md-12" > 
                     {% for article in pagination.items %}
-                    <div class="col-md-10" style="margin-bottom:5px"><span style="color: #7ed321;">•</span> <a style="font-size:15px" href="{{ url_for('article.detail') }}?aid={{ article.id}}" title="{{article.article_title}}" target="_blank">{{article.article_title}}</a> </div> <div class="col-md-2" style="color:gray;style="margin-bottom:5px"">{{article.create_time}}</div>
+                    <div class="col-md-10" style="margin-bottom:5px;"><span style="color: #7ed321;">•</span> <a style="font-size:15px;" href="{{ url_for('article.detail') }}?aid={{ article.id}}" title="{{article.article_title}}" target="_blank">{{article.article_title}}</a> </div> <div class="col-md-2" style="color:gray;style="margin-bottom:5px"">{{article.create_time}}</div>
                     {% endfor %}
                 </div>
               </div>
