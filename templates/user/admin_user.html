@@ -8,7 +8,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>用户管理</h1>
+            <h1>用户管理&nbsp;&nbsp;{% if g.user.is_root == True or g.user.is_admin == True%}<a type="button" class="btn btn-success" href="{{url_for('user.add')}}" > 新增用户 </a><span></span>{% endif %}</h1>
             <table class="table table-bordered table-hover">
                 <tr>
                     <th>序号</th>
@@ -23,6 +23,8 @@
                     <th>是否删除</th>
                     <th>操作</th>
                 </tr>
+                {# 只有root和管理员能看到用户信息 #}
+                {% if g.user.is_root == True or g.user.is_admin == True %}
                 {% for user in pagination.items %}
                 <tr>
                     {# 序号 #}
@@ -52,6 +54,7 @@
                         {% if g.user.id != user.id %}<button type="button" class="btn btn-danger"  tag={{ user.id }}> 删除 </button><span></span>{% endif %}
                     </td>
                 {% endfor %}
+                {% endif %}
               </table>
         </div>
 

@@ -128,4 +128,8 @@ class UserCenterForm(UsernameForm,EmailForm,PhoneForm,ImageUpLoad):
             
 
 
+# 新增用户表单
+class AddUserForm(UsernameForm,PassWordForm,EmailForm,PhoneForm,CheckCodeForm):
+    repassword = PasswordField('repassword', validators=[DataRequired(),InputRequired(message="必须输入确认密码"),EqualTo('password',message='两次密码不一致')])
+
 

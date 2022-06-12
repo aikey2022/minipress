@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.utils import secure_filename
 from exts import db,cache,csrf
 from exts.utils.valid_code import image_code
-from modules.user_module import User,UserRegForm,UserLogForm,UserCenterForm
+from modules.user_module import *
 from modules.article_module import *
 import os,time,io,settings
 from sqlalchemy import and_
@@ -25,7 +25,6 @@ def before_user_bp_request():
        g.user = User.query.filter(User.id == uid).first() 
        # print('-------------------------->>',g.user)
     
-
 
 
 @user_bp.route('/',endpoint='index')
@@ -241,6 +240,50 @@ def user_admin():
     
     flash('没有管理权限',category='error')
     return render_template('user/info.html',user=g.user,types=g.types)
+
+
+
+# 新增用户
+@user_bp.route('/add', endpoint="add",methods=['GET', 'POST'])
+@check_login_status
+def user_add():
+    form = AddUserForm()
+    if g.user.is_admin != True and g.user.is_root != True:
+        flash('没有权限请联系',category='error')
+        return render_template('user/info.html',user=g.user,types=g.types)
+    
+    if form.validate_on_submit():
+        # 获取数据
+        username= request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        role = request.form.get('role')
+            
+        # 创建user对象
+        adduser = User()
+        adduser.username= username
+        adduser.password= generate_password_hash(password=password)
+        adduser.email= email
+        adduser.phone= phone
+        
+        # 超级管理员可以操作添加root和admin用户 0 regular 1 admin 2 root
+        if g.user.is_root == True:
+            if role == '1':
+                # 授权为管理员
+                adduser.is_admin = True
+            if role == '2':
+                # 授权为超级管理员
+                adduser.is_root = True
+                
+            bp_logging.logger.debug(f'role={role} {type(role)}')
+            
+        # 提交数据到数据库
+        db.session.add(adduser)
+        db.session.commit()
+        flash('添加用户成功', category='info')
+ 
+    return render_template('user/adduser.html',user=g.user,types=g.types,form=form)
 
 
 

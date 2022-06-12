@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %} <title>新增用户</title> {% endblock %}
+{% block content %} 
+  <div class="container">
+  	<div class="row">
+  		<form class="form-horizontal" action="{{ url_for('user.add') }}" method="post">
+			  {{ form.csrf_token }}
+			<div class="form-group">
+				<div class="col-md-offset-2  col-md-3" style="text-align: center;">
+				  <h2>添加用户</h2>
+				</div>
+			</div>
+			
+  		  <div class="form-group">
+  			<label for="username" class="col-md-2 control-label">* 用户名: </label>
+  			<div class="col-md-3">
+				  {{ form.username(class="form-control",placeholder='请输入用户名')  }} 
+				  {# 验证未通过 #}
+				  {% if form.username.errors %}<span style="color:red">{{ form.username.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  		  
+  		  <div class="form-group">
+  			<label for="password" class="col-md-2 control-label">* 密码: </label>
+  			<div class="col-md-3">
+				{{ form.password(class="form-control",placeholder='请输入密码')  }} 
+				{# 验证未通过 #}
+				{% if form.password.errors %}<span style="color:red">{{ form.password.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  		  
+  		  <div class="form-group">
+  			<label for="repassword" class="col-md-2 control-label">* 确认密码: </label>
+  			<div class="col-md-3">
+				{{ form.repassword(class="form-control",placeholder='请输入确认密码')  }} 
+				{# 验证未通过 #}
+				{% if form.repassword.errors %}<span style="color:red">{{ form.repassword.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  					
+  		  <div class="form-group">
+  			<label for="email" class="col-md-2 control-label">* 邮箱: </label>
+  			<div class="col-md-3">
+  			  {{ form.email(class="form-control",placeholder='请输入邮箱')  }} 
+				{# 验证未通过 #}
+			  {% if form.email.errors %}<span style="color:red">{{ form.email.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  
+  		  <div class="form-group">
+  			<label for="phone" class="col-md-2 control-label">* 手机: </label>
+  			<div class="col-md-3">
+				{{ form.phone(class="form-control",placeholder='请输入手机号')  }} 
+				{# 验证未通过 #}
+				{% if form.phone.errors %}<span style="color:red">{{ form.phone.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+
+		{# 超级管理员有权限查看 #}
+		{% if g.user.is_root == True %}
+		<div class="form-group">
+			<label for="is_root" class="col-md-2 control-label">用户权限: </label>
+			<div class="col-md-3">
+				<input name="role" value="0" type="radio"  checked="checked"> 普通用户&nbsp;&nbsp;
+				<input name="role" value="1" type="radio" > 管理员&nbsp;&nbsp;
+				<input name="role" value="2" type="radio" > 超级管理员&nbsp;&nbsp;
+			</div>
+		</div>
+		{% endif %}
+
+  		  <div class="form-group">
+  			<label for="inputCheckCode" class="col-md-2 control-label">* 验证码: </label>
+  			<div class="col-md-3">
+				{{ form.check_code(class="form-control",placeholder='请输入验证码')  }} 
+				{# 验证未通过 #}
+				{% if form.check_code.errors %}<span style="color:red">{{ form.check_code.errors[0]}}</span>{% endif %}
+  			</div>
+			<div class="col-md-2">
+			  <img  alt="" id="image_code" src="{{ url_for('user.imgcode') }}"  width="130px"  height="35px"/>
+			</div>
+  		  </div>  
+							  
+  		  <div class="form-group">
+  			<div class="col-md-offset-2 col-md-4">
+  			  <button type="submit" class="btn btn-default">确认添加</button>
+                {# 打印闪现内容 #}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category,message in messages %}
+                    {% if category == 'info' %}
+                    <span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% elif category == 'error' %}
+                    <span style="color:red; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% endif %}
+                {% endfor %}
+            
+                {% endif %}
+                {% endwith %}
+  			</div>
+  		  </div>
+  		</form>
+  
+  	</div>
+  	
+  </div>
+
+{% endblock %}
+
+
+{% block scripts %} 
+<script>
+    // 点击切换验证码
+    $('#image_code').click(function(){
+        // 后面添加一个随机数，不同的请求才能切换
+        $(this).attr('src', "{{ url_for('user.imgcode') }}?key=" + Math.random());
+        // $(this).attr('src', "{{ url_for('user.imgcode') }}");
+    });
+</script>
+
+{% endblock %}
