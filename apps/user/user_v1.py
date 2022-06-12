@@ -248,11 +248,14 @@ def user_admin():
 @user_bp.route('/delete', endpoint="delete",methods=['GET', 'POST'])
 @check_login_status
 def user_delete():
-    uid = request.args.get('uid')
+    uid = request.args.get('uid',int)
     user = User.query.filter(User.id==uid).first()
     if not uid or not user:
         return jsonify(code=400,msg="用户不存在"),400
     
+    if g.user.id == uid:
+        return jsonify(code=400,msg='非法操作'),400
+
     if (g.user.is_root == True or g.user.is_admin == True) and (user.is_admin == False and user.is_root == False):
         user.is_delete = True
         db.session.commit()
