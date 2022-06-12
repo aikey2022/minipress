@@ -32,10 +32,10 @@ table {
                 {% for art_type in pagination.items %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td ><a href="#?tid={{ art_type.id}}" target="_blank">{{ art_type.type_name }}</a></td>
+                    <td ><a href="{{url_for('article.showtype')}}?tid={{ art_type.id}}" target="_blank">{{ art_type.type_name }}</a></td>
                     <td>{{ art_type.create_time }}</td>
                     <td>
-                        <a type="button" class="btn btn-success"  href="#?aid={{ art_type.id }}"> 编辑 </a><span></span>
+                        <a type="button" class="btn btn-success"  href="{{url_for('article.updatetype')}}?type_id={{ art_type.id }}"> 编辑 </a><span></span>
                         <button type="button" class="btn btn-danger"  tag={{ art_type.id }}> 删除 </button><span></span>
                     </td>
                 {% endfor %}

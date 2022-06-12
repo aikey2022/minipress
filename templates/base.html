@@ -30,7 +30,7 @@
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav">
-			<li class="active"><a href="{{url_for('article.articles') }}"> 首页 <span class="sr-only"></span></a></li>
+			<li><a href="{{url_for('article.articles') }}"> 首页 <span class="sr-only"></span></a></li>
 			<li><a href="{{url_for('about.aboutme')}}">了解我</a></li>
 			<li><a href="{{url_for('photo.showpics')}}">站点相册</a></li>
 			<li><a href="{{url_for('msg_abort.aborts')}}">留言板</a></li>
@@ -40,7 +40,7 @@
 				{% if types %}
 				{% for type in types %}
 				{% if loop.last %}<li role="separator" class="divider"></li>{% endif %}
-				<li><a href="#">{{ type.type_name }}</a></li>
+				<li><a href="{{ url_for('article.showtype')}}?tid={{type.id}}">{{ type.type_name }}</a></li>
 				{% endfor %}
 				{% endif %}
 

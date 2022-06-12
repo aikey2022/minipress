@@ -450,7 +450,83 @@ def article_deltype():
     # 删除失败
     return jsonify(code=400,msg='failed'),400
 
+
+
 # 分类修改
+@article_bp.route('/updatetype',endpoint='updatetype',methods=['GET', 'POST'])
+@check_login_status
+def article_updatetype():
+    form = UpdateTypeForm()
+    
+    if form.validate_on_submit():
+        type_id = request.form.get('hiddens',type=int)
+        new_type_name = request.form.get('type_name')
+        
+        # 验证分类名称唯一
+        if Article_Type.query.filter(and_(Article_Type.id!=type_id,Article_Type.type_name==new_type_name)).first():
+            flash(message="分类名称已存在,请更换名称",category="error")
+            return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
+        
+        art_type = Article_Type.query.filter(Article_Type.id==type_id).first()
+        # 使用小写存分类名称
+        art_type.type_name = new_type_name.lower()
+        
+        db.session.commit()
+        
+        flash('分类名称修改成功',category='info')
+        return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
+        
+    
+    type_id = request.args.get('type_id',int)
+    art_type = Article_Type.query.filter(Article_Type.id==type_id).first()
+    if not type_id or not art_type:
+        flash(message="分类不存在,无法修改",category="error")
+        return render_template('article/info.html',user=g.user,types=g.types)
+    form.hiddens.data = type_id
+    form.type_name.data = art_type.type_name
+    return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
+    
+    
+# 分类展示
+@article_bp.route('/showtype',endpoint='showtype',methods=['GET', 'POST'])
+def article_showtype():
+    # 判断用户是否登录
+    if not session.get('uid') or not cache.get(str(session.get('uid'))):
+        g.user = None   
+    
+    tid = request.args.get('tid',int)
+    art_type = Article_Type.query.filter(Article_Type.id==tid).first()
+    if not tid or not art_type:
+        flash('分类不存在',category='error')
+        return render_template('article/info.html',user=g.user,types=g.types)
+    
+    
+    # 获取当前分页数默认为1 类型为int
+    # 当前页码
+    current_page = request.args.get('page',1,type=int)
+    # 每页条数
+    per_page = 10
 
+    # 获取pagination对象
+    pagination = Article.query.filter(and_(Article.type_id==tid, Article.isdelete == False)).paginate(page=current_page,per_page=per_page)
+    
+    #========实现显示固定分页数====================
 
+    # 1 需要显示的固定页数长度
+    page_control = 5
+    
+    # 2 计算当前页到尾页的长度
+    page_len = pagination.pages - pagination.page
+    
+    # 3 比较当前页到尾页的长度与设定的长度
+    if pagination.pages<page_control:
+        # 3.1 总页数小于固定页数长度
+        middle_page = range(1,pagination.pages+1)
+    elif page_len < page_control<= pagination.pages:
+        # 3.2 当前页到尾页全部显示
+        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+    else:
+        # 3.3 当前页到设置的长度
+        middle_page = range(pagination.page,pagination.page+page_control)
 
+    return render_template('article/show_type.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page,art_type=art_type)

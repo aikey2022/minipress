@@ -1,0 +1,48 @@
+{% extends 'base.html'%}
+
+{% block title %} <title>更新分类</title> {% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="row">
+ 		<form class="form-horizontal" action="{{ url_for('article.updatetype') }}" method="post">
+			{{ form.csrf_token }}
+			{{ form.hiddens }}
+			<div class="form-group">
+				<div class="col-md-offset-2  col-md-3" style="text-align: center;">
+				  <h2>更新分类</h2>
+				</div>
+			</div>
+			
+  		    <div class="form-group">
+  				<label for="type_name" class="col-md-2 control-label">* 分类名称: </label>
+				<div class="col-md-4">
+					{{ form.type_name(class="form-control",placeholder='请输入新的分类名称')  }} 
+					{# 验证未通过 #}
+					{% if form.type_name.errors %}<span style="color:red">{{ form.type_name.errors[0]}}</span>{% endif %}
+				</div>
+  		    </div>
+  		  
+  		   <div class="form-group">
+				<div class="col-md-offset-2 col-md-4">
+					<button type="submit" class="btn btn-success">更新分类</button> <a type="button" class="btn btn-primary"  href="{{ url_for('article.admtype') }}"> 管理分类 </a>
+					{# 打印闪现内容 #}
+					{% with messages = get_flashed_messages(with_categories=true) %}
+					{% if messages %}
+					{% for category,message in messages %}
+						{% if category == 'info' %}
+						<span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+						{% elif category == 'error' %}
+						<span style="color:red; font-size:10px; font-weight:bold">{{ message }}</span>
+						{% endif %}
+					{% endfor %}
+				
+					{% endif %}
+					{% endwith %}
+				</div>
+  		    </div>
+  		</form>
+  
+  	</div>
+  	
+{% endblock %}

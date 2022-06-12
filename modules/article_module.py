@@ -94,7 +94,7 @@ class EditArticleForm(TitleForm,ContentForm,HiddensForm):
     def validate_title(self,field):
         if Article.query.filter(and_(Article.article_title == field.data, Article.uid != g.user.id)).first():
             # print("-------------------------------------->>>>>>>验证标题",field.data)
-            raise ValidationError('标题已存在')
+            raise ValidationError('标题已存在,请更换标题')
  
       
 class CommentForm(HiddensForm):
@@ -118,5 +118,16 @@ class AddtypeForm(FlaskForm):
         if field.data.lower() in [t.type_name.lower() for t in Article_Type.query.all()]:
             raise ValidationError('分类名称已存在')
 
-        
-        
+
+class UpdateTypeForm(HiddensForm):
+    type_name = StringField('type_name', validators=[DataRequired(message="必须输入分类名称且不含空格"),InputRequired(message="必须输入分类名称且不含空格"),Length(min=2,max=20,message="名称不能超过20个字")])
+    
+    def validate_type_name(self,field):
+        # 分类名称不能含有空格
+        if field.data.replace(" ","") != field.data or field.data.replace(" ","") == "":
+            raise ValidationError('分类名称不能含有空格')
+    
+    def validate_hiddens(self,field):
+        if not field.data or field.data not in [str(art_type.id) for art_type in g.types]:
+            raise ValidationError('修改的分类不存在')
+
