@@ -95,7 +95,7 @@ def user_register():
         # 提交数据到数据库
         db.session.add(user)
         db.session.commit()
-        
+        flash('注册成功', category='info')
         return redirect(url_for('user.register'))
     
     # 默认展示注册页面
