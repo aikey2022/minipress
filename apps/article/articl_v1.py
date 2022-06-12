@@ -463,13 +463,15 @@ def article_updatetype():
         new_type_name = request.form.get('type_name')
         
         # 验证分类名称唯一
-        if Article_Type.query.filter(and_(Article_Type.id!=type_id,Article_Type.type_name==new_type_name)).first():
-            flash(message="分类名称已存在,请更换名称",category="error")
-            return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
-        
+        # g.types = Article_Type.query.all()
+        for t in g.types:
+            if t.id != type_id and t.type_name.lower() == new_type_name.lower():
+                flash(message="分类名称已存在,请更换名称",category="error")
+                return render_template('article/update_type.html',user=g.user,types=g.types,form=form) 
+
         art_type = Article_Type.query.filter(Article_Type.id==type_id).first()
         # 使用小写存分类名称
-        art_type.type_name = new_type_name.lower()
+        art_type.type_name = new_type_name
         
         db.session.commit()
         
