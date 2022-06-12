@@ -1,0 +1,132 @@
+{% extends 'base.html'%}
+
+{% block title%} <title> 用户管理 </title>{% endblock %}
+
+
+{% block content %}
+{# 展示用户列表 #}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>用户管理</h1>
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th>序号</th>
+                    <th>用户名</th>
+                    <th>邮箱</th>
+                    <th>电话</th>
+                    <th>root权限</th>
+                    <th>管理员权限</th>
+                    <th>是否允许登录</th>
+                    <th>激活时间</th>
+                    <th>最近登录</th>
+                    <th>是否删除</th>
+                    <th>操作</th>
+                </tr>
+                {% for user in pagination.items %}
+                <tr>
+                    {# 序号 #}
+                    <td>{{ loop.index+(pagination.page -1) * pagination.per_page}}</td>
+                    {# 用户名 #}
+                    <td >{{ user.username }}</a></td>
+                    {# 邮箱 #}
+                    <td>{{ user.email }}</td>
+                    {# 电话 #}
+                    <td>{{ user.phone }}</td>
+                    {# root权限 #}
+                    <td>{{ user.is_root }}</td>
+                    {# 管理员权限 #}
+                    <td>{{ user.is_admin }}</td>
+                    {# 是否允许登录 #}
+                    <td>{{ user.allow_login }}</td>
+                    {# 激活时间 #}
+                    <td>{{ user.active_time }}</td>
+                    {# 最近登录 #}
+                    <td>{{ user.login_time }}</td>
+                    {# 是否删除 #}
+                    <td>{{ user.is_delete }}</td>
+
+                    <td>
+                        <a type="button" class="btn btn-success"  href="{{ url_for('user.update')}}?uid={{ user.id }}"> 编辑 </a><span></span>
+                        <button type="button" class="btn btn-danger"  tag={{ user.id }}> 删除 </button><span></span>
+                    </td>
+                {% endfor %}
+              </table>
+        </div>
+
+
+        {# 分页导航 #}
+        <div class="col-md-12" style="text-align:center;">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {# 上一页 #}
+                    {% if not pagination.has_prev %}
+                    <li class="disabled"><span aria-hidden="true">&laquo;上一页</span></li>
+                    {% else %}
+                    <li><a href="{{url_for('user.admin') }}?page={{ pagination.prev_num }}" aria-label="Previous" ><span aria-hidden="true">&laquo;上一页</span> </a></li>
+                    {% endif %}
+
+                    {% for page_num in middle_page %}
+                    <li {% if page_num == pagination.page %} class="active" {% endif %} ><a href="{{url_for('user.admin') }}?page={{ page_num }}">{{ page_num }}</a></li>
+                    {% endfor %}
+
+                    {# 下一页 #}
+                    {% if not pagination.has_next %}
+                    <li class="disabled"><span aria-hidden="true">下一页&raquo;</span></li>
+                    {% else %}
+                    <li><a href="{{url_for('user.admin') }}?page={{ pagination.next_num }}" aria-label="Next"><span aria-hidden="true">下一页&raquo;</span></a></li>
+                    {% endif %}
+                    <li><span>总页数: {{ pagination.pages }}</span></li>
+                </ul>
+            </nav>
+
+                {# 打印闪现内容 #}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category,message in messages %}
+                    {% if category == 'info' %}
+                    <span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% elif category == 'error' %}
+                    <span style="color:red; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% endif %}
+                {% endfor %}
+            
+                {% endif %}
+                {% endwith %}
+
+        </div
+    
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}  
+
+<script>
+    // 删除用户操作
+    $(function() {
+        $('.btn-danger').click(function(){
+            // 获取点击对象本身
+            let $this = $(this);
+            let uid = $this.attr('tag');
+            // console.log(aid);
+            // let isdelete = confirm("确定删除吗?")
+            if (confirm("确定删除吗?")){
+                $.get('{{ url_for('user.delete') }}',{uid:uid}, function (data,status){
+                    console.log(status);
+                    if (data.code == 200){
+                        location.href = '{{ url_for('user.admin') }}';
+                    }else{
+                        $this.next('span').text(data.msg);
+                        $this.next('span').css('color','red');
+                    }
+                })
+            }
+        })
+    })
+
+</script>
+
+{% endblock %}

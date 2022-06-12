@@ -199,3 +199,70 @@ def user_center():
         bp_logging.logger.debug('更新资料成功')
     # 默认返回个人中心页面
     return render_template('user/user_center.html',user=g.user,types=g.types,form=form)
+
+
+
+# 用户管理中心
+@user_bp.route('/admin', endpoint="admin",methods=['GET', 'POST'])
+@check_login_status
+def user_admin():
+    uid = g.user.id
+    user = User.query.filter(User.id==uid).first()
+    if user.is_root == True or user.is_admin == True:
+        # 获取当前分页数默认为1 类型为int
+        # 当前页码
+        current_page = request.args.get('page',1,type=int)
+        # 每页条数
+        per_page = 10
+
+        # 获取pagination对象
+        pagination = User.query.filter(User.is_delete == False).paginate(page=current_page,per_page=per_page)
+        
+        #========实现显示固定分页数====================
+
+        # 1 需要显示的固定页数长度
+        page_control = 5
+        
+        # 2 计算当前页到尾页的长度
+        page_len = pagination.pages - pagination.page
+        
+        # 3 比较当前页到尾页的长度与设定的长度
+        if pagination.pages<page_control:
+            # 3.1 总页数小于固定页数长度
+            middle_page = range(1,pagination.pages+1)
+        elif page_len < page_control<= pagination.pages:
+            # 3.2 当前页到尾页全部显示
+            middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
+        else:
+            # 3.3 当前页到设置的长度
+            middle_page = range(pagination.page,pagination.page+page_control)
+
+        return render_template('user/admin_user.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
+    
+    flash('没有管理权限',category='error')
+    return render_template('user/info.html',user=g.user,types=g.types)
+
+
+
+# 删除用户
+@user_bp.route('/delete', endpoint="delete",methods=['GET', 'POST'])
+@check_login_status
+def user_delete():
+    uid = request.args.get('uid')
+    user = User.query.filter(User.id==uid).first()
+    if not uid or not user:
+        return jsonify(code=400,msg="用户不存在"),400
+    
+    if (g.user.is_root == True or g.user.is_admin == True) and (user.is_admin == False and user.is_root == False):
+        user.is_delete = True
+        db.session.commit()
+        return jsonify(code=200,msg='用户删除成功'),200
+    
+    return jsonify(code=400,msg='没有权限;请联系管理员')
+
+
+# 编辑用户
+@user_bp.route('/update', endpoint="update",methods=['GET', 'POST'])
+@check_login_status
+def user_delete():
+    return jsonify(code=400)
