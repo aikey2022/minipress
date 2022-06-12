@@ -51,12 +51,11 @@
 {%  block content %} 
 <div class="container">
     <div class="row">
-        <div class="col-md-10"> 
-
+        <div class="col-md-12"> 
+            <div class="col-md-12"> <h3>留言: </h3> </div>
             {# 展示留言 #}
             <div class="col-md-12" id="msgs">
                 <hr />
-                <div class="col-md-12"> <h4>留言: </h4> </div>
                 {% if  pagination.items|length > 0 %}
                 {% for msg in pagination.items %}
                 {# 留言时间 #}

@@ -31,7 +31,7 @@ table {
                 </tr>
                 {% for art_type in pagination.items %}
                 <tr>
-                    <td>{{ loop.index }}</td>
+                    <td>{{ loop.index+(pagination.page -1) * pagination.per_page }}</td>
                     <td ><a href="{{url_for('article.showtype')}}?tid={{ art_type.id}}" target="_blank">{{ art_type.type_name }}</a></td>
                     <td>{{ art_type.create_time }}</td>
                     <td>

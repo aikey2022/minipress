@@ -32,7 +32,7 @@ table {
                 </tr>
                 {% for article in pagination.items %}
                 <tr>
-                    <td>{{ loop.index }}</td>
+                    <td>{{ loop.index+(pagination.page -1) * pagination.per_page}}</td>
                     <td ><a href="{{ url_for('article.detail') }}?aid={{ article.id}}" target="_blank">{{ article.article_title }}</a></td>
                     <td>{{ article.user.username }}</td>
                     <td>{{ article.article_type.type_name }}</td>

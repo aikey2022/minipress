@@ -31,7 +31,7 @@ table {
                 </tr>
                 {% for msg in pagination.items %}
                 <tr>
-                    <td>{{ loop.index }}</td>
+                    <td>{{ loop.index+(pagination.page -1) * pagination.per_page }}</td>
                     <td >{{ msg.msg_content|safe }}</td>
                     <td>{{ msg.user.username }}</td>
                      <td>{{ msg.create_time }}</td>
