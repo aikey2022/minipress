@@ -36,7 +36,7 @@ def setabout():
     # POST请求
     if form.validate_on_submit():
         # 获取uid
-        get_uid = request.form.get('hidden')
+        get_uid = request.form.get('hidden',int)
         # 获取提交的内容
         content = request.form.get('content')
         
@@ -61,7 +61,7 @@ def setabout():
         return render_template('about/set_about.html',user=g.user,types=g.types,form=form)
         
     # GET请求
-    aboutme= AboutMe.query.filter(User.id == uid).first()
+    aboutme= AboutMe.query.filter(AboutMe.uid == uid).first()
     if aboutme:
         form.content.data = aboutme.content
     return render_template('about/set_about.html',user=g.user,types=g.types,form=form)
