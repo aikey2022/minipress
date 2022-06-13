@@ -20,6 +20,16 @@ def before_user_bp_request():
     # 每个请求都要展示文章分类
     articl_type = Article_Type.query.all()
     g.types = articl_type
+
+    # 管理员修改用户前置条件
+    if request.path == url_for('user.update'):
+        if request.method == 'POST':
+            edit_id = request.form.get('hiddens',type=int)
+        if request.method == 'GET':
+            edit_id = request.form.get('uid',type=int)
+        if edit_id:
+            g.edituser = User.query.filter(User.id == edit_id).first()
+            
     uid = session.get('uid')
     if uid:
        g.user = User.query.filter(User.id == uid).first() 
@@ -131,7 +141,7 @@ def user_login():
             # 设置session
             session['uid'] = user.id
             # 设置缓存  uid=username
-            cache.set(str(user.id),user.username,timeout=3600)
+            cache.set(str(user.id),user.username,timeout=60*60*3)
             g.user = user
             flash("登陆成功^_^", category="info")
             bp_logging.logger.debug('登陆成功')
@@ -291,24 +301,99 @@ def user_add():
 @user_bp.route('/delete', endpoint="delete",methods=['GET', 'POST'])
 @check_login_status
 def user_delete():
+    # 判断操作权限
+    if g.user.is_root == False and g.user.is_admin == False:
+        flash('没有权限,请联系管理员',category='error')
+        return jsonify(code=400,msg='无权限;请联系管理员')
+    
     uid = request.args.get('uid',int)
-    user = User.query.filter(User.id==uid).first()
-    if not uid or not user:
-        return jsonify(code=400,msg="用户不存在"),400
+    deluser = User.query.filter(User.id==uid).first()
+    if not uid or not deluser:
+        return jsonify(code=400,msg="用户不存在")
     
     if g.user.id == uid:
-        return jsonify(code=400,msg='非法操作'),400
+        return jsonify(code=400,msg='非法操作')
 
-    if (g.user.is_root == True or g.user.is_admin == True) and (user.is_admin == False and user.is_root == False):
-        user.is_delete = True
+    # root权限操作
+    if g.user.is_root == True:
+        deluser.is_delete = True
         db.session.commit()
+        # 清除登录状态
+        cache.delete(str(deluser.id))
         return jsonify(code=200,msg='用户删除成功'),200
     
-    return jsonify(code=400,msg='没有权限;请联系管理员')
+    # admin权限操作
+    if g.user.is_admin == True and (deluser.is_root == False and deluser.is_admin == False):
+        deluser.is_delete = True
+        db.session.commit()
+        # 清除登录状态
+        cache.delete(str(deluser.id))
+        return jsonify(code=200,msg='用户删除成功'),200
+    
+    # return jsonify(code=400,msg='无权限;请联系管理员')
 
 
 # 编辑用户
 @user_bp.route('/update', endpoint="update",methods=['GET', 'POST'])
 @check_login_status
-def user_delete():
-    return jsonify(code=400)
+def user_update():
+    # 判断操作权限
+    if g.user.is_root == False and g.user.is_admin == False:
+        flash('没有权限,请联系管理员',category='error')
+        return render_template('user/info.html',user=g.user,types=g.types) 
+    
+    form = EditUserForm()
+    
+    # GET请求
+    if request.method == 'GET':
+        uid = request.args.get('uid',type=int)
+        bp_logging.logger.debug(f'uid={uid} {type(uid)}')
+        edituser = User.query.filter(User.id == uid).first()
+        if not uid or not edituser:
+            flash('非法操作,无法编辑',category='error')
+            return render_template('user/info.html',user=g.user,types=g.types)
+        
+        form.username.data = edituser.username
+        form.email.data = edituser.email
+        form.phone.data = edituser.phone
+        form.hiddens.data = uid
+
+        return  render_template('user/update_user.html',user=g.user,types=g.types,form=form,edituser=edituser)
+    
+    # POST请求
+    if form.validate_on_submit():
+        # 验证通过
+        edit_uid = request.form.get('hiddens',type=int)   # 获取表单隐藏的uid,验证使用
+        edituser = User.query.filter(User.id == edit_uid).first()   # 获取用户对象
+        if not edit_uid or not edituser:
+            flash('非法操作,修改无效',category='error')
+            return render_template('user/info.html',user=g.user,types=g.types)
+
+        edituser.username = request.form.get('username')
+        edituser.email = request.form.get('email')
+        edituser.phone = request.form.get('phone')
+        
+        # 编辑权限---仅超级管理员可以编辑权限
+        if g.user.is_root == True:
+            new_role = request.form.get('role',0,type=int)   # 默认为普通用户
+            if new_role == 1:
+                edituser.is_admin = True
+                edituser.is_root = False
+            if new_role == 2:
+                edituser.is_root = True
+                edituser.is_admin = False
+
+        # 是否允许登录
+        new_allow = request.form.get('allow_login',1,type=int)  # 默认允许登录
+        if new_allow == 0:
+            edituser.allow_login = False
+            
+        db.session.commit()
+        
+        flash('编辑用户成功',category='info')
+        return  render_template('user/update_user.html',user=g.user,types=g.types,form=form,edituser=edituser)
+    
+    edit_uid = request.form.get('hiddens',type=int)   # 获取表单隐藏的uid,验证使用
+    edituser = User.query.filter(User.id == edit_uid).first()   # 获取用户对象
+    form.hiddens.data = edit_uid
+    return  render_template('user/update_user.html',user=g.user,types=g.types,form=form,edituser=edituser)

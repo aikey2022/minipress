@@ -3,7 +3,7 @@ from datetime import datetime
 from modules.base_module import Base
 from flask import session,g
 from flask_wtf import FlaskForm
-from wtforms import StringField,TextAreaField,PasswordField,FileField,EmailField
+from wtforms import StringField,TextAreaField,PasswordField,FileField,EmailField,HiddenField
 from wtforms.validators import DataRequired,Length,InputRequired,EqualTo,Regexp,ValidationError
 import re
 
@@ -80,6 +80,9 @@ class CheckCodeForm(FlaskForm):
 
 class ImageUpLoad(FlaskForm):
     image = FileField('iconimg', validators=[FileAllowed(['jpg','png','jpeg','gif'],message='只能上传jpg,png,jpeg,gif格式的图片'),FileSize(max_size=1024*1024*10,min_size=0,message='图片大小必须为1M以内')])
+    
+class HiddenForm(FlaskForm):
+    hiddens = HiddenField('hiddens')
              
 # #=======================================================基础表单字段 end =======================================================#
 
@@ -129,7 +132,34 @@ class UserCenterForm(UsernameForm,EmailForm,PhoneForm,ImageUpLoad):
 
 
 # 新增用户表单
-class AddUserForm(UsernameForm,PassWordForm,EmailForm,PhoneForm,CheckCodeForm):
+class AddUserForm(UsernameForm,PassWordForm,EmailForm,PhoneForm):
     repassword = PasswordField('repassword', validators=[DataRequired(),InputRequired(message="必须输入确认密码"),EqualTo('password',message='两次密码不一致')])
 
 
+# 编辑用户表单
+class EditUserForm(UsernameForm,EmailForm,PhoneForm,HiddenForm):
+    def validate_username(self,field):
+        if re.search('^[0-9_]',field.data):
+            raise ValidationError(message='用户名不能以数字或者下划线开头')
+
+        if re.search(' ',field.data):
+            raise ValidationError(message='用户名不能含有空格')
+        
+        # 仅用户名发生变化时验证唯一       
+        if g.edituser.username != field.data:
+            if User.query.filter(User.username == field.data).first():
+                raise ValidationError(message='用户名已存在')
+
+        
+    def validate_email(self,field):
+        # 仅当邮箱发生变化时验证唯一
+        if g.edituser.email != field.data:
+            if User.query.filter(User.email == field.data).first():
+                raise ValidationError(message='邮箱已存在')
+    
+    def validate_phone(self,field):
+        # 仅当手机号发生变化时验证唯一
+        if g.edituser.phone != field.data:
+            if User.query.filter(User.phone == field.data).first():
+                raise ValidationError(message='手机号已存在')
+            

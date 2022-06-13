@@ -49,9 +49,20 @@
                     <td>{{ user.is_delete }}</td>
 
                     <td>
-                        <a type="button" class="btn btn-success"  href="{{ url_for('user.update')}}?uid={{ user.id }}"> 编辑 </a><span></span>&nbsp;&nbsp;
-                        <a type="button" class="btn btn-info"  href="{{ url_for('user.update')}}?uid={{ user.id }}"> 修改密码 </a><span></span>&nbsp;&nbsp;
-                        {% if g.user.id != user.id %}<button type="button" class="btn btn-danger"  tag={{ user.id }}> 删除 </button><span></span>{% endif %}
+                        {% if g.user.is_root == True %}
+                            {# 超级管理员权限 #}
+                            <a type="button" class="btn btn-success"  href="{{ url_for('user.update')}}?uid={{ user.id }}"> 编辑 </a><span></span>&nbsp;&nbsp;
+                            <a type="button" class="btn btn-info"  href="{{ url_for('user.update')}}?uid={{ user.id }}"> 修改密码 </a><span></span>&nbsp;&nbsp;
+                            {% if g.user.id != user.id %}<button type="button" class="btn btn-danger"  tag={{ user.id }}> 删除 </button><span></span>{% endif %}
+                        {% elif g.user.is_admin == True %}
+                            {# 管理员权限 #}
+                            {% if (user.is_root == False and user.is_admin == False) or user.id == g.user.id %}
+                            <a type="button" class="btn btn-success"  href="{{ url_for('user.update')}}?uid={{ user.id }}"> 编辑 </a><span></span>&nbsp;&nbsp;
+                            <a type="button" class="btn btn-info"  href="{{ url_for('user.update')}}?uid={{ user.id }}"> 修改密码 </a><span></span>&nbsp;&nbsp;
+                            {% if g.user.id != user.id %} <button type="button" class="btn btn-danger"  tag={{ user.id }}> 删除 </button><span></span>{% endif %}
+                            {% endif %}
+                        {% endif %}
+
                     </td>
                 {% endfor %}
                 {% endif %}

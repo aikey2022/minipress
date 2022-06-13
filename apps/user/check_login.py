@@ -20,7 +20,7 @@ def check_login_status(func):
             return redirect(url_for('user.login'))
         
         # 3 已登录
-        user = User.query.filter(User.id == session.get('uid')).first()
+        user = User.query.filter(User.id == uid,User.is_delete==False).first()
         g.user = user
         # print('----------------->>>',"已登录")
         return func(*args, **kwargs)

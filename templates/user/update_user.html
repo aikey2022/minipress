@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
-{% block title %} <title>新增用户</title> {% endblock %}
+{% block title %} <title>编辑用户</title> {% endblock %}
 {% block content %} 
   <div class="container">
   	<div class="row">
-  		<form class="form-horizontal" action="{{ url_for('user.add') }}" method="post">
+  		<form class="form-horizontal" action="{{ url_for('user.update') }}" method="post">
 			  {{ form.csrf_token }}
+			  {{ form.hiddens }}
 			<div class="form-group">
 				<div class="col-md-offset-2  col-md-3" style="text-align: center;">
-				  <h2>添加用户</h2>
+				  <h2>修改用户</h2>
 				</div>
 			</div>
 			
@@ -20,24 +21,7 @@
   			</div>
   		  </div>
   		  
-  		  <div class="form-group">
-  			<label for="password" class="col-md-2 control-label">* 密码: </label>
-  			<div class="col-md-3">
-				{{ form.password(class="form-control",placeholder='请输入密码')  }} 
-				{# 验证未通过 #}
-				{% if form.password.errors %}<span style="color:red">{{ form.password.errors[0]}}</span>{% endif %}
-  			</div>
-  		  </div>
-  		  
-  		  <div class="form-group">
-  			<label for="repassword" class="col-md-2 control-label">* 确认密码: </label>
-  			<div class="col-md-3">
-				{{ form.repassword(class="form-control",placeholder='请输入确认密码')  }} 
-				{# 验证未通过 #}
-				{% if form.repassword.errors %}<span style="color:red">{{ form.repassword.errors[0]}}</span>{% endif %}
-  			</div>
-  		  </div>
-  					
+
   		  <div class="form-group">
   			<label for="email" class="col-md-2 control-label">* 邮箱: </label>
   			<div class="col-md-3">
@@ -61,17 +45,25 @@
 		<div class="form-group">
 			<label for="is_root" class="col-md-2 control-label">用户权限: </label>
 			<div class="col-md-3">
-				<input name="role" value="0" type="radio"  checked="checked"> 普通用户&nbsp;&nbsp;
-				<input name="role" value="1" type="radio" > 管理员&nbsp;&nbsp;
-				<input name="role" value="2" type="radio" > 超级管理员&nbsp;&nbsp;
+				<input name="role" value="0" type="radio" {% if edituser.is_root == False and edituser.is_admin == False %} checked="checked" {% endif %}> 普通用户&nbsp;&nbsp;
+				<input name="role" value="1" type="radio" {% if edituser.is_admin %} checked="checked" {% endif %}> 管理员&nbsp;&nbsp;
+				<input name="role" value="2" type="radio" {% if edituser.is_root %} checked="checked" {% endif %}> 超级管理员&nbsp;&nbsp;
 			</div>
 		</div>
 		{% endif %}
 
+		{# 是否允许登录 #}
+		<div class="form-group">
+			<label for="allow_login" class="col-md-2 control-label">是否允许登录: </label>
+			<div class="col-md-3">
+				<input name="allow_login" value="1" type="radio" {% if edituser.allow_login == True %} checked="checked" {%  endif %}> 允许&nbsp;&nbsp;
+				<input name="allow_login" value="0" type="radio" {% if edituser.allow_login == False %} checked="checked" {%  endif %}> 不允许&nbsp;&nbsp;
+			</div>
+		</div>
 
-  		  <div class="form-group">
+  		<div class="form-group">
   			<div class="col-md-offset-2 col-md-4">
-  			  <button type="submit" class="btn btn-default">确认添加</button>
+  			  <button type="submit" class="btn btn-default">确认修改</button>
                 {# 打印闪现内容 #}
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
