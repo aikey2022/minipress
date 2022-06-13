@@ -141,12 +141,12 @@ class ModiyPassForm(PassWordForm):
             raise ValidationError(message='原密码错误')
 
 
-# 新增用户表单
+# 管理员新增用户表单
 class AddUserForm(UsernameForm,PassWordForm,EmailForm,PhoneForm):
     repassword = PasswordField('repassword', validators=[DataRequired(),InputRequired(message="必须输入确认密码"),EqualTo('password',message='两次密码不一致')])
 
 
-# 编辑用户表单
+# 管理员编辑用户表单
 class EditUserForm(UsernameForm,EmailForm,PhoneForm,HiddenForm):
     def validate_username(self,field):
         if re.search('^[0-9_]',field.data):
@@ -173,3 +173,7 @@ class EditUserForm(UsernameForm,EmailForm,PhoneForm,HiddenForm):
             if User.query.filter(User.phone == field.data).first():
                 raise ValidationError(message='手机号已存在')
             
+            
+# 管理员修改用户密码
+class EditUserPassForm(PassWordForm,HiddenForm):
+    repasswd = PasswordField('repasswd', validators=[DataRequired(),InputRequired(message="必须输入确认密码"),EqualTo('password',message='两次密码不一致')])

@@ -1,3 +1,4 @@
+from tkinter.tix import Tree
 from flask import Blueprint,render_template,request,redirect,url_for,flash,session,g,jsonify,make_response,abort
 from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.utils import secure_filename
@@ -419,4 +420,54 @@ def user_update():
 
 
 # 用户管理中心--------修改密码
+@user_bp.route('/editpwd', endpoint="editpwd",methods=['GET', 'POST'])
+@check_login_status
+def user_admeditpwd():
+    
+    # 检查操作权限
+    if g.user.is_root == False and g.user.is_admin == False:
+        flash('没有权限,请联系管理员',category='error')
+        return render_template('user/info.html',user=g.user,types=g.types)
+    
+    
+    form = EditUserPassForm()
+    
+    # GET请求
+    if request.method == 'GET':
+        uid = request.args.get('uid',type=int)
+        edit_user = User.query.filter(User.id == uid).first()
+        if not uid or not edit_user:
+            flash('非法操作,无法修改用户密码',category='error')
+            return render_template('user/info.html',user=g.user,types=g.types)
+        
+        form.hiddens.data = uid
+        return render_template('user/admchpwd.html',user=g.user,types=g.types,form=form,edit_user=edit_user)
+    # POST 请求
+    
+    if form.validate_on_submit():
+        uid = request.form.get('hiddens',type =int)
+        edit_user = User.query.filter(User.id == uid).first()
+        if not uid or not edit_user:
+            flash('无效操作,无法修改用户密码',category='error')
+            return render_template('user/info.html',user=g.user,types=g.types)
+        
+        # 判断权限执行操作
+        # 普通管理员无法修改超级管理员或者管理员密码
+        if g.user.is_admin == True and (edit_user.is_root == True or edit_user.is_admin == True):
+            flash('权限不足,无法修改密码',category='error')
+            return render_template('user/info.html',user=g.user,types=g.types)
+        
+        newpasswd = request.form.get('password')
+        edit_user.password = generate_password_hash(newpasswd)
+        db.session.commit()
+        
+        flash('修改用户密码成功',category='info')
+        return redirect(url_for('user.editpwd')+'?uid='+str(uid))
+    
+    uid = request.form.get('hiddens',type =int)
+    edit_user = User.query.filter(User.id == uid).first()
+    if not uid or not edit_user:
+        flash('用户不存在',category='error')    
+    flash('用户密码修改失败',category='error')
+    return render_template('user/admchpwd.html',user=g.user,types=g.types,form=form,edit_user=edit_user)
 
