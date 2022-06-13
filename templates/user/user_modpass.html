@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %} <title>更新密码</title> {% endblock %}
+{% block content %} 
+  <div class="container">
+  	<div class="row">
+  		<form class="form-horizontal" action="{{ url_for('user.modpasswd') }}" method="post">
+			  {{ form.csrf_token }}
+			<div class="form-group">
+				<div class="col-md-offset-2  col-md-3" style="text-align: center;">
+				  <h2>修改密码</h2>
+				</div>
+			</div>
+			
+  		  <div class="form-group">
+  			<label for="password" class="col-md-2 control-label">* 原密码: </label>
+  			<div class="col-md-3">
+				  {{ form.password(class="form-control",placeholder='请输入用户名')  }} 
+				  {# 验证未通过 #}
+				  {% if form.password.errors %}<span style="color:red">{{ form.password.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  		  
+  		  <div class="form-group">
+  			<label for="newpasswd" class="col-md-2 control-label">* 新密码: </label>
+  			<div class="col-md-3">
+				{{ form.newpasswd(class="form-control",placeholder='请输入密码')  }} 
+				{# 验证未通过 #}
+				{% if form.newpasswd.errors %}<span style="color:red">{{ form.newpasswd.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+  		  
+  		  <div class="form-group">
+  			<label for="repasswd" class="col-md-2 control-label">* 确认密码: </label>
+  			<div class="col-md-3">
+				{{ form.repasswd(class="form-control",placeholder='请输入确认密码')  }} 
+				{# 验证未通过 #}
+				{% if form.repasswd.errors %}<span style="color:red">{{ form.repasswd.errors[0]}}</span>{% endif %}
+  			</div>
+  		  </div>
+
+		  
+  		  <div class="form-group">
+  			<div class="col-md-offset-2 col-md-4">
+  			  <button type="submit" class="btn btn-default">确认修改</button>
+                {# 打印闪现内容 #}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category,message in messages %}
+                    {% if category == 'info' %}
+                    <span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% elif category == 'error' %}
+                    <span style="color:red; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% endif %}
+                {% endfor %}
+            
+                {% endif %}
+                {% endwith %}
+  			</div>
+  		  </div>
+  		</form>
+  
+  	</div>
+  	
+  </div>
+
+{% endblock %}
+

@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,PasswordField,FileField,EmailField,HiddenField
 from wtforms.validators import DataRequired,Length,InputRequired,EqualTo,Regexp,ValidationError
 import re
-
+from werkzeug.security import generate_password_hash,check_password_hash
 from flask_wtf.file import FileField, FileAllowed, FileRequired,FileSize
 
 
@@ -129,6 +129,16 @@ class UserCenterForm(UsernameForm,EmailForm,PhoneForm,ImageUpLoad):
             if User.query.filter(User.phone == field.data).first():
                 raise ValidationError(message='手机号已存在')
             
+
+# 用户修改密码表单
+class ModiyPassForm(PassWordForm):
+    newpasswd = PasswordField('newpasswd', validators=[DataRequired(),InputRequired(message="必须输入新密码"),Length(min=6,max=16,message='密码长度在6-16个字符'),])
+    repasswd = PasswordField('repasswd', validators=[DataRequired(),InputRequired(message="必须输入确认密码"),EqualTo('newpasswd',message='两次密码不一致')])
+    
+    # 校验原密码
+    def validate_password(self,field):
+        if not check_password_hash(g.user.password,field.data):
+            raise ValidationError(message='原密码错误')
 
 
 # 新增用户表单

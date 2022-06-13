@@ -210,6 +210,24 @@ def user_center():
     return render_template('user/user_center.html',user=g.user,types=g.types,form=form)
 
 
+# 个人中心--------修改密码
+@user_bp.route('/modpasswd', endpoint="modpasswd",methods=['GET', 'POST'])
+@check_login_status
+def user_modpasswd():
+    
+    form = ModiyPassForm()
+    
+    if form.validate_on_submit():
+        newpasswd = request.form.get('newpasswd')
+        user = g.user
+        user.password = generate_password_hash(newpasswd)
+        db.session.commit()
+        g.user = user  # 更新g.user
+        flash('密码修改成功^_^', category='info')
+        return redirect(url_for('user.modpasswd'))
+    
+    return render_template('user/user_modpass.html',user=g.user,types=g.types,form=form)
+
 
 # 用户管理中心
 @user_bp.route('/admin', endpoint="admin",methods=['GET', 'POST'])
@@ -397,3 +415,8 @@ def user_update():
     edituser = User.query.filter(User.id == edit_uid).first()   # 获取用户对象
     form.hiddens.data = edit_uid
     return  render_template('user/update_user.html',user=g.user,types=g.types,form=form,edituser=edituser)
+
+
+
+# 用户管理中心--------修改密码
+

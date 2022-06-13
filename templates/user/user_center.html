@@ -51,7 +51,7 @@
 				  
   		  <div class="form-group">
   			<div class="col-md-offset-2 col-md-4">
-  			  <button type="submit" class="btn btn-success">更新资料</button>
+  			  <button type="submit" class="btn btn-success">更新资料</button> &nbsp;&nbsp; <a href="{{url_for('user.modpasswd')}}"  type="submit" class="btn btn-danger">修改密码</a>
 				{# 打印闪现内容 #}
 				{% with messages = get_flashed_messages() %}
 				{% if messages %}
