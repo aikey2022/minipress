@@ -5,6 +5,8 @@ ENV   LANG=C.UTF-8
 
 ADD    .   /opt/python/flask/minipress
 
+VOLUME  /flask/pkg/site-packages:/usr/local/lib/python3.10/site-packages
+
 RUN    mkdir ~/.pip/ && \ 
        echo "Asia/Shanghai" /etc/timezone && \  
        # 配置apk包加速镜像为阿里云
