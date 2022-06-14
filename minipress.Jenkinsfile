@@ -154,7 +154,7 @@ pipeline {
                     def re_prod_hosts = evaluate(env.prod_hosts)
 
 
-                    def remote_path = "/opt/flask"
+                    def remote_path = "/opt/python/flask"
  
                     def remote_hosts=[:]
 
