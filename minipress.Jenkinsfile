@@ -187,7 +187,7 @@ pipeline {
                                 scp  ${env.scp_args}   -r  ${env.WORKSPACE}/*  ${re_host}:${remote_path}/${PROJECT_NAME}
 
                                 # 构建镜像
-                                ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker build -t minipress:latest .'
+                                # ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker build -t minipress:latest .'
 
                                 # 启动容器
                                 ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker-compose -f ${PROJECT_NAME}-compose.yaml up -d'
@@ -199,13 +199,13 @@ pipeline {
                             echo "${re_hostname}  ${re_host}"
                             sh """
                                 # 生成 .env文件,docker-compose命令默认使用
-                                ssh ${env.cmd_args} root@${re_host} "echo ACTIVE=${ACTIVE}>${remote_path}/${PROJECT_NAME}/.env"
+                                # ssh ${env.cmd_args} root@${re_host} "echo ACTIVE=${ACTIVE}>${remote_path}/${PROJECT_NAME}/.env"
 
                                 # 停止服务
-                                ssh  ${env.cmd_args}   root@${re_host} 'docker-compose -f ${remote_path}/${PROJECT_NAME}/${PROJECT_NAME}.yaml down'
+                                ssh  ${env.cmd_args}   root@${re_host} 'docker-compose -f ${remote_path}/${PROJECT_NAME}/${PROJECT_NAME}-compose.yaml down'
                                 
                                 # 启动服务
-                                ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker-compose -f ${PROJECT_NAME}.yaml up -d'
+                                ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker-compose -f ${PROJECT_NAME}-compose.yaml up -d'
                             """
                         }
                     }else if ("${ACTION_MODE}" == "stop"){
@@ -214,7 +214,7 @@ pipeline {
                             echo "${re_hostname}  ${re_host}"
                             sh """
                                 # 停止服务
-                                ssh  ${env.cmd_args}   root@${re_host} 'docker-compose -f ${remote_path}/${PROJECT_NAME}/${PROJECT_NAME}.yaml down'
+                                ssh  ${env.cmd_args}   root@${re_host} 'docker-compose -f ${remote_path}/${PROJECT_NAME}/${PROJECT_NAME}-compose.yaml down'
                                 
                             """
                         }
