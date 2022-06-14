@@ -90,108 +90,70 @@ The following screenshots give a close insight into minipress
 
 ### Manage Album Upload Pictures
 
+![image](https://user-images.githubusercontent.com/74240261/173586947-1ae61603-df0c-48b3-87b0-71d64cf1f4c2.png)
 
 
+### Delete the Picture
 
+![image](https://user-images.githubusercontent.com/74240261/173587126-39a02ac3-1d98-429b-92fb-d75837e60ad3.png)
 
 
+### Browse the Homepage
 
+![image](https://user-images.githubusercontent.com/74240261/173587240-827c46d1-af0e-4ae5-915e-6ab7b9e3f9fc.png)
 
 
+### Read the Article
 
+![image](https://user-images.githubusercontent.com/74240261/173587460-3d5ec166-fe37-4011-8d5b-a44b92ff2c25.png)
 
 
+### Comments On the Article
 
+![image](https://user-images.githubusercontent.com/74240261/173587555-2cd32811-e5ec-4b16-b268-2334b2d9daff.png)
 
 
+### View Article Comments
 
+![image](https://user-images.githubusercontent.com/74240261/173587617-cfeb4b34-25ae-4eee-a30a-b8160463299c.png)
 
 
+### User Message Board
 
+![image](https://user-images.githubusercontent.com/74240261/173587687-13952e52-eac4-4433-843d-5b70ebc635d4.png)
 
 
+### Managing User Messages
+![image](https://user-images.githubusercontent.com/74240261/173587749-75b335de-8b2e-4d36-b25e-b0e662bbd932.png)
 
 
+### Browse User Message Boards
 
+![image](https://user-images.githubusercontent.com/74240261/173587837-8b8822bd-e32c-448c-b080-04eeb37fc094.png)
 
 
+### Browse Articles By Category
+![image](https://user-images.githubusercontent.com/74240261/173587889-d97199b4-3c59-4db3-9983-d334b4035f02.png)
 
 
+### Search The Article By Articles Title Keywords
 
+![image](https://user-images.githubusercontent.com/74240261/173587987-d48659d7-725a-493a-98a3-13b4e57f0387.png)
 
 
+### Settings About Me
 
+![image](https://user-images.githubusercontent.com/74240261/173588151-525c47bf-772b-40fb-9641-7f31efa8e3ef.png)
 
 
+### Show About Me
 
+![image](https://user-images.githubusercontent.com/74240261/173588202-90ee0e0d-f722-4565-8d69-a5e75197a86f.png)
 
 
+### Log out
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![image](https://user-images.githubusercontent.com/74240261/173588269-8b824019-732e-4cca-8606-085f7a238136.png)
 
 
 
