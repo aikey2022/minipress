@@ -95,16 +95,20 @@
 	  
   		   <div class="form-group">
 				<div class="col-md-offset-2 col-md-4">
-					<button type="submit" class="btn btn-success">确认修改</button>{% if error %}<span style="color:red"> {{ error }}</span>{% endif %}
-					{# 打印闪现内容 #}
-					{% with messages = get_flashed_messages() %}
-					{% if messages %}
-					{% for message in messages %}
-						<span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
-					{% endfor %}
-				
-					{% endif %}
-					{% endwith %}
+					<button type="submit" class="btn btn-success">确认修改</button>
+                {# 打印闪现内容 #}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category,message in messages %}
+                    {% if category == 'info' %}
+                    <span style="color:green; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% elif category == 'error' %}
+                    <span style="color:red; font-size:10px; font-weight:bold">{{ message }}</span>
+                    {% endif %}
+                {% endfor %}
+            
+                {% endif %}
+                {% endwith %}
 				</div>
   		    </div>
   		</form>

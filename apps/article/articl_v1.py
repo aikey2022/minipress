@@ -130,19 +130,19 @@ def edit_article():
         # 默认展示文章编辑页面
         return render_template('article/edit.html',form=form,typeid=typeid,user=g.user,types=g.types)
     
+
     # POST请求验证
+    # 获取标题
+    title = request.form.get('title')
+    # 获取文章类别
+    artilceType = request.form.get('artilceType',type=int)
+    # 获取文章内容
+    content = request.form.get('content')
+    # 获取文章id
+    aid = request.form.get('hiddens',type=int)
+    # 打印日志
+    # bp_logging.logger.debug(f'{title},{artilceType},{content}')
     if form.validate_on_submit():
-        # 获取标题
-        title = request.form.get('title')
-        # 获取文章类别
-        artilceType = request.form.get('artilceType',type=int)
-        # 获取文章内容
-        content = request.form.get('content')
-        # 获取文章id
-        aid = request.form.get('hiddens',type=int)
-        # 打印日志
-        # bp_logging.logger.debug(f'{title},{artilceType},{content}')
-        
         # 验证artilceType
         typelist = [type.id for type in g.types]
         if artilceType not in typelist:
@@ -158,11 +158,13 @@ def edit_article():
             # 保存到数据库
             db.session.commit()
             flash(message="修改成功",category="info")
-            return render_template('article/info.html',user=g.user,types=g.types,tip="修改成功")
+            return render_template('article/edit.html',user=g.user,types=g.types,form=form,typeid=artilceType)
         
-        return render_template('article/edit.html',form=form,user=g.user,types=g.types,error="修改失败")
+        flash('修改失败',category='error')
+        return render_template('article/edit.html',form=form,user=g.user,types=g.types,typeid=artilceType)
     
-    return render_template('article/edit.html',form=form,user=g.user,types=g.types,error="修改失败")
+    flash('修改失败',category='error')
+    return render_template('article/edit.html',form=form,user=g.user,types=g.types,typeid=artilceType)
     
 
 # 文章详情
@@ -378,10 +380,22 @@ def article_deltype():
 def article_updatetype():
     form = UpdateTypeForm()
     
+    # GET请求
+    if request.method == 'GET':
+        type_id = request.args.get('type_id',int)
+        art_type = Article_Type.query.filter(Article_Type.id==type_id).first()
+        if not type_id or not art_type:
+            flash(message="分类不存在,无法修改",category="error")
+            return render_template('article/info.html',user=g.user,types=g.types)
+        form.hiddens.data = type_id
+        form.type_name.data = art_type.type_name
+        return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
+    
+    
+    # POST请求
+    type_id = request.form.get('hiddens',type=int)
+    new_type_name = request.form.get('type_name')
     if form.validate_on_submit():
-        type_id = request.form.get('hiddens',type=int)
-        new_type_name = request.form.get('type_name')
-        
         # 验证分类名称唯一
         # g.types = Article_Type.query.all()
         for t in g.types:
@@ -397,16 +411,10 @@ def article_updatetype():
         
         flash('分类名称修改成功',category='info')
         return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
-        
     
-    type_id = request.args.get('type_id',int)
-    art_type = Article_Type.query.filter(Article_Type.id==type_id).first()
-    if not type_id or not art_type:
-        flash(message="分类不存在,无法修改",category="error")
-        return render_template('article/info.html',user=g.user,types=g.types)
-    form.hiddens.data = type_id
-    form.type_name.data = art_type.type_name
-    return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
+    # flash('分类名称修改失败',category='error')    
+    # return render_template('article/update_type.html',user=g.user,types=g.types,form=form)
+
     
     
 # 分类展示
