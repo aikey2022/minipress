@@ -4,9 +4,6 @@ FROM   python:3.10.4-alpine
 ENV   LANG=C.UTF-8
 
 ADD    .   /opt/python/flask/minipress
-
-VOLUME  /flask/pkg/site-packages:/usr/local/lib/python3.10/site-packages
-
 RUN    mkdir ~/.pip/ && \ 
        echo "Asia/Shanghai" /etc/timezone && \  
        # 配置apk包加速镜像为阿里云
@@ -24,6 +21,7 @@ COPY     pip.conf  ~/.pip/
 # 配置 应用工作目录
 WORKDIR  /opt/python/flask/minipress
 
+VOLUME  /flask/pkg/site-packages:/usr/local/lib/python3.10/site-packages
 # 安装 项目依赖包
 RUN      pip install --upgrade pip && \ 
          pip install setuptools && \ 
