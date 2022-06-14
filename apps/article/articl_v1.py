@@ -406,7 +406,6 @@ def article_updatetype():
         art_type = Article_Type.query.filter(Article_Type.id==type_id).first()
         # 使用小写存分类名称
         art_type.type_name = new_type_name
-        
         db.session.commit()
         
         flash('分类名称修改成功',category='info')
