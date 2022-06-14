@@ -3,6 +3,9 @@ from exts import cache,db
 from apps.user.check_login import check_login_status
 from modules.msg_aboard_module import MsgAboard,MsgAboardForm
 from sqlalchemy import and_,or_
+from modules.page_nums import page_num_control
+
+
 
 msg_abort_bp = Blueprint('msg_abort',__name__)
 
@@ -28,23 +31,7 @@ def msg_aborts():
     pagination = MsgAboard.query.order_by(-MsgAboard.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
 
     return render_template('msgabort/abort.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page,form=form)
 
@@ -90,23 +77,7 @@ def msg_admborts():
     pagination = MsgAboard.query.filter(MsgAboard.uid==g.user.id).order_by(-MsgAboard.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
 
     return render_template('msgabort/admabort.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
 

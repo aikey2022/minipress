@@ -6,6 +6,9 @@ from sqlalchemy import and_
 from werkzeug.utils import secure_filename
 import time,settings,os
 from exts import cache
+from modules.page_nums import page_num_control
+
+
 
 photo_bp = Blueprint('photo',__name__)
 
@@ -29,23 +32,7 @@ def photo_showpics():
     pagination = Photo.query.order_by(-Photo.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
 
     return render_template('photo/showpic.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)    
 
@@ -101,23 +88,7 @@ def photo_admin():
     pagination = Photo.query.filter(Photo.uid == uid).order_by(-Photo.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
 
     return render_template('photo/admpic.html',user=g.user,types=g.types,form=form,pagination=pagination,middle_page=middle_page)
 

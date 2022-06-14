@@ -5,7 +5,7 @@ from exts.utils.logsout import CreateLogging
 from sqlalchemy import and_,or_,not_
 from exts import cache
 import re
-
+from modules.page_nums import page_num_control
 
 article_bp = Blueprint('article', __name__)
 bp_logging = CreateLogging('article_v1','debug')
@@ -27,24 +27,8 @@ def article_index():
     # 获取pagination对象
     pagination = Article.query.filter(Article.isdelete == False).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
     
-    #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    # 实现显示固定分页数
+    middle_page = page_num_control(pagination,5)
 
     return render_template('article/index.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
 
@@ -116,23 +100,7 @@ def admin_article():
     pagination = Article.query.filter(Article.uid == g.user.id,Article.isdelete != 1).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
 
     return render_template('article/admin_article.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
     
@@ -233,23 +201,7 @@ def article_detail():
     pagination = Comments.query.filter(and_(Comments.art_id == aid,Comments.isdelete==False)).order_by(-Comments.create_time).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
     
     # 每次请求都要刷新浏览量
     article.views += 1
@@ -352,23 +304,7 @@ def article_seach():
     per_page = 5
     pagination = Article.query.filter(and_(Article.article_title.contains(keywords),Article.isdelete==False)).order_by(-Article.create_time).paginate(page=current_page,per_page=per_page)
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)  
+    middle_page = page_num_control(pagination,5)
             
     return render_template('article/search.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)      
         
@@ -388,23 +324,7 @@ def article_admtype():
     pagination = Article_Type.query.filter(Article_Type.isdelete == False).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
 
     return render_template('article/adm_type.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page)
     
@@ -513,22 +433,6 @@ def article_showtype():
     pagination = Article.query.filter(and_(Article.type_id==tid, Article.isdelete == False)).paginate(page=current_page,per_page=per_page)
     
     #========实现显示固定分页数====================
-
-    # 1 需要显示的固定页数长度
-    page_control = 5
-    
-    # 2 计算当前页到尾页的长度
-    page_len = pagination.pages - pagination.page
-    
-    # 3 比较当前页到尾页的长度与设定的长度
-    if pagination.pages<page_control:
-        # 3.1 总页数小于固定页数长度
-        middle_page = range(1,pagination.pages+1)
-    elif page_len < page_control<= pagination.pages:
-        # 3.2 当前页到尾页全部显示
-        middle_page = range(pagination.pages-page_control+1,pagination.pages+1)
-    else:
-        # 3.3 当前页到设置的长度
-        middle_page = range(pagination.page,pagination.page+page_control)
+    middle_page = page_num_control(pagination,5)
 
     return render_template('article/show_type.html',user=g.user,types=g.types,pagination=pagination,middle_page=middle_page,art_type=art_type)
