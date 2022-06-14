@@ -7,8 +7,8 @@ services:
       user: root
       volumes:
       - /etc/localtime:/etc/localtime
-      - icon:/opt/python/flask/minipress/static/upload/icon
-      - photo:/opt/python/flask/minipress/static/upload/photo
+      - /flask/upload/icon:/opt/python/flask/minipress/static/upload/icon
+      - /flask/upload/photo:/opt/python/flask/minipress/static/upload/photo
       ports:
       - "5000:5000"
       networks:
