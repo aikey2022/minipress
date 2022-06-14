@@ -244,7 +244,7 @@ def user_admin():
         per_page = 10
 
         # 获取pagination对象
-        pagination = User.query.filter(User.allow_login == True,User.is_delete == False).paginate(page=current_page,per_page=per_page)
+        pagination = User.query.filter(User.is_delete == False).paginate(page=current_page,per_page=per_page)
         
         #========实现显示固定分页数====================
         middle_page = page_num_control(pagination,5)
@@ -362,11 +362,14 @@ def user_update():
 
         return  render_template('user/update_user.html',user=g.user,types=g.types,form=form,edituser=edituser)
     
+    
+    
     # POST请求
+    edit_uid = request.form.get('hiddens',type=int)   # 获取表单隐藏的uid,验证使用
+    edituser = User.query.filter(User.id == edit_uid).first()   # 获取用户对象
+
     if form.validate_on_submit():
         # 验证通过
-        edit_uid = request.form.get('hiddens',type=int)   # 获取表单隐藏的uid,验证使用
-        edituser = User.query.filter(User.id == edit_uid).first()   # 获取用户对象
         if not edit_uid or not edituser:
             flash('非法操作,修改无效',category='error')
             return render_template('user/info.html',user=g.user,types=g.types)
@@ -389,14 +392,13 @@ def user_update():
         new_allow = request.form.get('allow_login',1,type=int)  # 默认允许登录
         if new_allow == 0:
             edituser.allow_login = False
-            
+        if new_allow == 1:
+            edituser.allow_login = True
         db.session.commit()
         
         flash('编辑用户成功',category='info')
         return  render_template('user/update_user.html',user=g.user,types=g.types,form=form,edituser=edituser)
     
-    edit_uid = request.form.get('hiddens',type=int)   # 获取表单隐藏的uid,验证使用
-    edituser = User.query.filter(User.id == edit_uid).first()   # 获取用户对象
     form.hiddens.data = edit_uid
     return  render_template('user/update_user.html',user=g.user,types=g.types,form=form,edituser=edituser)
 
