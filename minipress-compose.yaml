@@ -5,14 +5,21 @@ services:
       image: minipress:latest
       restart: always
       user: root
+      environment:
+        # 设置时区环境变量
+        - 'SET_CONTAINER_TIMEZONE=true'
+        - 'CONTAINER_TIMEZONE=Asia/Shanghai'
       volumes:
-      - /etc/localtime:/etc/localtime
-      - /flask/upload/icon:/opt/python/flask/minipress/static/upload/icon
-      - /flask/upload/photo:/opt/python/flask/minipress/static/upload/photo
+        # 同步宿主机时间
+        - /etc/localtime:/etc/localtime
+        # 挂载头像上传目录
+        - /flask/upload/icon:/opt/python/flask/minipress/static/upload/icon
+        # 挂载相册上传目录
+        - /flask/upload/photo:/opt/python/flask/minipress/static/upload/photo
       ports:
-      - "5000:5000"
+        - "5000:5000"
       networks:
-      - app_minipress
+        - app_minipress
 
 networks:
   app_minipress:
