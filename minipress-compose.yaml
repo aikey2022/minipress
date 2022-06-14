@@ -1,7 +1,15 @@
 version: "3.5"
 services:
     minipress:
+      # 构建镜像
+      build:
+        # 上下文路径
+        context: .
+        # 指定构建镜像的 Dockerfile 文件名。使用dockerfile文件来构建时，必须指定构建路径
+        dockerfile: alpine-python.Dockerfile
+      
       container_name: minipress
+      # 镜像名称和版本
       image: minipress:latest
       restart: always
       user: root

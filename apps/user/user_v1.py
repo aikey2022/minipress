@@ -92,7 +92,7 @@ def user_register():
         password = request.form.get('password')
         email = request.form.get('email')
         phone = request.form.get('phone')
-        bp_logging.logger.debug(f'username:{username},password:{password},email:{email},phone:{phone}')
+        # bp_logging.logger.debug(f'username:{username},password:{password},email:{email},phone:{phone}')
         # print('info----------------->>>',username,password,email,phone)
             
         # 创建user对象
@@ -130,7 +130,7 @@ def user_login():
         # check_code = request.form.get('check_code')
         
         # 验证登陆信息
-        user = User.query.filter(User.username==username).first()
+        user = User.query.filter(User.username==username,User.is_delete== False,User.allow_login==True).first()
         # 校验密码
         if user:
             check_pwd = check_password_hash(pwhash=user.password,password=password)
@@ -145,7 +145,7 @@ def user_login():
             cache.set(str(user.id),user.username,timeout=60*60*3)
             g.user = user
             flash("登陆成功^_^", category="info")
-            bp_logging.logger.debug('登陆成功')
+            # bp_logging.logger.debug('登陆成功')
             return redirect(url_for('article.articles'))
         
         # 登录失败
