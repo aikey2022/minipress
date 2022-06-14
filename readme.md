@@ -65,26 +65,30 @@ The following screenshots give a close insight into minipress
 
 ### Delete Articles
 
-![image-20220614204349962](C:\Users\aikey\AppData\Roaming\Typora\typora-user-images\image-20220614204349962.png)
-
-
-
+![image](https://user-images.githubusercontent.com/74240261/173586228-a5b51321-d514-4f1a-b79e-fe0d1bc92c56.png)
 
 
 ### Article Classification Management
 
-![image-20220614204452839](C:\Users\aikey\AppData\Roaming\Typora\typora-user-images\image-20220614204452839.png)
-
+![image](https://user-images.githubusercontent.com/74240261/173586280-bc9beda1-06ec-4091-bab3-4b8fabb96cd7.png)
 
 
 ### Add New Classification
 
-![image-20220614204608196](C:\Users\aikey\AppData\Roaming\Typora\typora-user-images\image-20220614204608196.png)
+![image](https://user-images.githubusercontent.com/74240261/173586320-028c5c40-85a1-4d79-bed2-ab879d563cf5.png)
 
 
+### Edit The Classification
+
+![image](https://user-images.githubusercontent.com/74240261/173586452-c343c26d-b65a-4af1-9bea-88e3c1f354cb.png)
 
 
+### Delete The Classification
 
+![image](https://user-images.githubusercontent.com/74240261/173586533-ea8f44e9-d37e-4f30-ab00-d7b41c78af1a.png)
+
+
+### Manage Album Upload Pictures
 
 
 
