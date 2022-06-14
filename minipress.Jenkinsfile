@@ -190,7 +190,7 @@ pipeline {
                                 # ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker build -t minipress:latest .'
 
                                 # 启动容器
-                                ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker-compose -f ${PROJECT_NAME}-compose.yaml up -d'
+                                ssh  ${env.cmd_args}   root@${re_host} 'cd ${remote_path}/${PROJECT_NAME} && docker-compose -f ${PROJECT_NAME}-compose.yaml build &&docker-compose -f ${PROJECT_NAME}-compose.yaml up -d'
                             """
                         }
                     }else if ("${ACTION_MODE}" == "restart"){
