@@ -125,6 +125,23 @@ pipeline {
             }
         }
 
+        stage('sonarqube code checking ') {
+            steps {
+               script{
+                  // 引入SonarQubeScanner工具；sonar-scanner 与前面在Global Tool Configuration中配置的Name值一致
+                   scannerHome = tool 'sonar-scanner'
+               }
+               //引入SonarQube服务器环境；sonarqube 与前面在System Configuration 配置的Name值一致
+               withSonarQubeEnv('sonar-server'){
+               	  // 我这里是windows环境所以使用 bat
+                  // bat "${scannerHome}/bin/sonar-scanner"
+                  // linux 环境使用下面的命令
+                  sh "${scannerHome}/bin/sonar-scanner"
+               }
+
+            }
+        }
+
         stage('send files to remote path') {
             steps {
                 script {
