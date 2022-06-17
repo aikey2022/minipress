@@ -101,7 +101,7 @@ pipeline {
             }
         }
            
-        stage('get source code') {
+        stage('Get Code') {
             steps {
                 // 拉取项目代码  默认目录env.WORKSPACE
                     checkout([
@@ -125,7 +125,7 @@ pipeline {
             }
         }
 
-        stage('sonarqube code checking ') {
+        stage('SonarQube Checking ') {
             steps {
                script{
                   // 引入SonarQubeScanner工具；sonar-scanner 与前面在Global Tool Configuration中配置的Name值一致
@@ -142,7 +142,7 @@ pipeline {
             }
         }
 
-        stage('send files to remote path') {
+        stage('Check files') {
             steps {
                 script {
                     // 更新操作
@@ -150,7 +150,6 @@ pipeline {
                         // 发送文件到远程主机
                         sh """
                             ls -lh .
-                            ls -lh ${env.WORKSPACE}
                         """
                     }else{
                         echo "${ACTION_MODE} 操作 请稍等......"
@@ -162,7 +161,7 @@ pipeline {
 
 
         // 2 构建镜像
-        stage('build  image and deploy minipress') {
+        stage('Build  Image And Deploy minipress') {
            steps {
                 
                 script {
@@ -237,7 +236,7 @@ pipeline {
                         }
                     }
 
-                    // 停留5秒
+                    // 停留6秒
                     sleep 6
                 }               
            }
@@ -247,7 +246,7 @@ pipeline {
             steps {
                 // 查看服务运行状态
                 script {
-                    // ybspaceMall 主机
+                    // minipress 主机
                     def re_test_hosts = evaluate(env.test_hosts)
                     def re_prod_hosts = evaluate(env.prod_hosts)
 
