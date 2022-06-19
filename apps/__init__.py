@@ -23,6 +23,7 @@ def create_app():
     
     # 引入配置
     app.config.from_object(settings.Development)
+    # app.config.from_object(settings.Production)
     
     # 初始化db
     db.init_app(app=app)

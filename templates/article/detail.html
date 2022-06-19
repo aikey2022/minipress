@@ -61,15 +61,15 @@
             
             <div class="col-md-12">
                 <span class="glyphicon glyphicon-time" aria-hidden="true"></span><span>{{ article.create_time }}</span>&nbsp;&nbsp;
-                <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span>: <strong>{{ article.user.username}}</strong></span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span>:&nbsp;<strong>{{ article.user.username}}</strong></span>&nbsp;&nbsp;
                 {#点赞量#}
-                <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span><span>: {{ article.thumbs_up }}</span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>:&nbsp;<span>{{ article.thumbs_up }}</span>&nbsp;&nbsp;
                 {#收藏量#}
-                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" {% if user %} tag="{{ user.id }}" {% endif %} {% if g.save %}style="color:red" {% endif %}></span>:<span>{{ favorites_num }}</span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-star-empty" aria-hidden="true" {% if user %} tag="{{ user.id }}" {% endif %} {% if g.save %}style="color:red" {% endif %}></span>:&nbsp;<span>{{ favorites_num }}</span>&nbsp;&nbsp;
                 {#浏览量#}
-                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span><span>: {{ article.views }}</span>&nbsp;&nbsp; 
+                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>:&nbsp;<span>{{ article.views }}</span>&nbsp;&nbsp; 
                 {#评论量#}
-                <span class="glyphicon glyphicon-comment" aria-hidden="true"></span><span><a href="#comments">评论</a>: {{ comments_num }}</span>&nbsp;&nbsp;
+                <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;<span><a href="#comments">评论</a>:&nbsp;{{ comments_num }}</span>&nbsp;&nbsp;
                 <hr style="margin-top: 0;">
             </div>		
 

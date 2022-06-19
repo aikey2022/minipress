@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.9"
 services:
     minipress:
       # 构建镜像
@@ -6,17 +6,21 @@ services:
         # 上下文路径
         context: .
         # 指定构建镜像的 Dockerfile 文件名。使用dockerfile文件来构建时，必须指定构建路径
-        dockerfile: alpine-python.Dockerfile
+        # dockerfile: python.Dockerfile
+        dockerfile: python-alpine.Dockerfile
       
       container_name: minipress
       # 镜像名称和版本
-      image: minipress:latest
+      image: "minipress:${IMAGE_TAG:-latest}"
       restart: always
       user: root
       environment:
-        # 设置时区环境变量
-        - 'SET_CONTAINER_TIMEZONE=true'
-        - 'CONTAINER_TIMEZONE=Asia/Shanghai'
+        # 需在docker-compose文件所在目录建立.env文件,此处的引用的变量必须与.env文件变量名一致
+        - MYSQL_HOST
+        - MYSQL_PASSWORD
+        - MYSQL_DBNAME
+        - REDIS_HOST
+        - REDIS_PASSWORD
       volumes:
         # 同步宿主机时间
         - /etc/localtime:/etc/localtime
