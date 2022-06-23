@@ -30,6 +30,7 @@ class Config():
     
     SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_HOST_PORT}/{MYSQL_DBNAME}?charset=utf8mb4'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_POOL_RECYCLE = 500
     
     # redis配置
     CACHE_TYPE = 'redis'
